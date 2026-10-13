@@ -1,0 +1,3322 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PlantCare Suite v19.4｜智慧植物與資材管理系統</title>
+<style>
+:root{
+  --bg:#f4f7f2; --panel:#ffffff; --panel-2:#edf4ea; --text:#183022;
+  --muted:#728078; --line:#dbe4dc; --primary:#2f7a4b; --primary-2:#225f39;
+  --accent:#d8a845; --danger:#b94d4d; --shadow:0 14px 35px rgba(44,77,55,.10);
+  --radius:20px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:Inter,"Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;
+    background:
+      radial-gradient(circle at 15% 10%,rgba(114,168,126,.10),transparent 28%),
+      radial-gradient(circle at 88% 18%,rgba(214,176,82,.08),transparent 24%),
+      linear-gradient(145deg,#f7faf5,#edf4ec);
+    color:var(--text)}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.app{min-height:100vh;display:grid;grid-template-columns:250px 1fr}
+.sidebar{position:sticky;top:0;height:100vh;padding:20px 15px;background:linear-gradient(180deg,#163322 0%,#1c422a 65%,#173a25 100%);color:#fff;display:flex;flex-direction:column;gap:16px;box-shadow:10px 0 28px rgba(27,58,37,.08)}
+.brand{display:flex;align-items:center;gap:12px;padding:8px 8px 18px;border-bottom:1px solid rgba(255,255,255,.12)}
+.logo{width:44px;height:44px;border-radius:15px;background:linear-gradient(145deg,#6bb77d,#2f7a4b);display:grid;place-items:center;font-size:24px;box-shadow:0 8px 20px rgba(0,0,0,.15)}
+.brand h1{font-size:16px;margin:0}.brand small{color:#c9d9cd}
+.nav{display:grid;gap:7px}
+.nav button{border:1px solid transparent;background:transparent;color:#dce9df;text-align:left;padding:11px 12px;border-radius:12px;display:flex;gap:10px;align-items:center;font-weight:650}
+.nav button:hover,.nav button.active{background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.10);box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
+.sidebar-foot{margin-top:auto;font-size:12px;color:#abc0b1;padding:10px}
+.main{padding:18px 22px 24px;min-width:0}
+.topbar{display:flex;gap:14px;align-items:center;justify-content:space-between;margin-bottom:14px;padding:13px 15px;background:rgba(255,255,255,.78);backdrop-filter:blur(10px);border:1px solid rgba(213,226,216,.85);border-radius:16px;box-shadow:0 8px 24px rgba(44,77,55,.055)}
+.title h2{margin:0 0 4px;font-size:24px;letter-spacing:-.3px}.title p{margin:0;color:var(--muted);font-size:12.8px}
+.actions{display:flex;gap:9px;flex-wrap:wrap;justify-content:flex-end}
+.btn{border:0;border-radius:12px;padding:10px 14px;background:#e6eee7;color:var(--text);font-weight:700}
+.btn:hover{filter:brightness(.98)}
+.btn.primary{background:var(--primary);color:#fff}
+.btn.danger{background:#fae5e5;color:#8e3434}
+.btn.ghost{background:transparent;border:1px solid var(--line)}
+.page{display:none}.page.active{display:block}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px;align-items:stretch}
+.stat{position:relative;overflow:hidden;background:linear-gradient(155deg,#fff,#f7faf6);border:1px solid var(--line);border-radius:15px;padding:13px 14px 12px;box-shadow:0 8px 22px rgba(44,77,55,.07);min-height:92px}
+.stat .k{font-size:11px;color:var(--muted);margin-bottom:5px;font-weight:700}.stat .v{font-size:25px;font-weight:850;letter-spacing:-.4px}.stat .s{font-size:11px;color:var(--primary);margin-top:4px;font-weight:650}
+.grid{display:grid;gap:12px;align-items:start}.grid.two{grid-template-columns:1.15fr .85fr}.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.card{position:relative;background:linear-gradient(180deg,#ffffff 0%,#fbfdfb 100%);border:1px solid var(--line);border-radius:17px;padding:15px;box-shadow:0 10px 28px rgba(44,77,55,.075);align-self:start;overflow:hidden}
+.card h3{margin:0 0 10px;font-size:16px;font-weight:850;letter-spacing:.1px}
+.section-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+.section-head h3{margin:0}
+.camp-tabs{display:flex;gap:7px;overflow:auto;padding-bottom:2px;margin:0 0 10px}
+.camp-tabs button{white-space:nowrap;border:1px solid var(--line);background:var(--panel);padding:7px 10px;border-radius:999px;color:var(--muted);font-size:12px}
+.camp-tabs button.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.plant-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:start}
+.plant-card{border:1px solid #d5e2d7;border-radius:16px;overflow:hidden;background:linear-gradient(180deg,#fff,#f5faf4);box-shadow:0 10px 24px rgba(41,74,50,.09);align-self:start;transition:.18s transform,.18s box-shadow}
+.plant-card:hover{transform:translateY(-2px);box-shadow:0 14px 30px rgba(41,74,50,.13)}
+.card:before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,#6fa87a,#d7b85c);opacity:.75}
+.stat:after{content:"";position:absolute;width:54px;height:54px;border-radius:50%;right:-15px;top:-18px;background:rgba(47,122,75,.07)}
+.section-head h3{display:flex;align-items:center;gap:6px}
+.btn{box-shadow:0 3px 8px rgba(44,77,55,.05)}
+.btn.primary{box-shadow:0 6px 14px rgba(47,122,75,.18)}
+
+.level-hero{position:relative;overflow:hidden}
+.level-hero:before{content:"";position:absolute;inset:0;opacity:.88}
+.level-hero.level-1:before{background:radial-gradient(circle at 30% 20%,#eef9dc 0%,#d2efb8 55%,#b9d991 100%)}
+.level-hero.level-2:before{background:radial-gradient(circle at 30% 20%,#e5f7de 0%,#bfe0b9 55%,#9fcaa5 100%)}
+.level-hero.level-3:before{background:radial-gradient(circle at 30% 20%,#dcf1e3 0%,#9fd0b5 55%,#73b294 100%)}
+.level-hero.level-4:before{background:radial-gradient(circle at 30% 20%,#fff4cc 0%,#ebd48d 48%,#d6b257 100%)}
+.level-icon{position:relative;z-index:1;font-size:44px;line-height:1}
+.level-role{position:absolute;left:10px;bottom:8px;z-index:1;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:800;color:#20402d;background:rgba(255,255,255,.82);border:1px solid rgba(255,255,255,.65);backdrop-filter:blur(2px)}
+.level-hero.level-4 .level-role{color:#73510d;background:rgba(255,248,225,.9)}
+.level-ring{position:absolute;right:10px;bottom:8px;z-index:1;font-size:18px;opacity:.95}
+.level-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:999px;font-size:11.5px;font-weight:800;border:1px solid #dbe8dd;background:#edf4ea;color:#31583d}
+.level-badge.level-1{background:#eef8dd;color:#567119}
+.level-badge.level-2{background:#ebf7eb;color:#2f6c44}
+.level-badge.level-3{background:#e9f2fb;color:#305f8b}
+.level-badge.level-4{background:#fff1c9;color:#7b5a10}
+.level-desc{font-size:11.5px;color:#5f7064;margin-top:4px}
+.level-legend{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 12px}
+.level-chip{display:inline-flex;align-items:center;gap:5px;padding:5px 8px;border-radius:999px;font-size:11px;font-weight:700;border:1px solid #dce7dd;background:#fff}
+.master-list{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end}
+.master-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.type-tag{display:inline-flex;gap:5px;align-items:center;padding:5px 8px;border-radius:999px;background:#f1f6ef;border:1px solid #dbe6da;font-size:11px}
+.damage{background:#fbe9e9;color:#8c3e3e}
+.camp-location-list{display:grid;gap:7px;margin-top:9px;width:100%}
+.camp-location-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:8px 9px;border:1px solid #dce7dd;background:#fff;border-radius:11px}
+.camp-location-row small{display:block;color:var(--muted);margin-top:2px}
+.location-ok{background:#e8f5ea;color:#2e6a3e}
+.location-off{background:#f3f3f3;color:#777}
+.link-log{border-left:3px solid #78a787;padding:8px 10px;border-radius:0 10px 10px 0;background:#f8fbf7;font-size:12px}
+.link-log small{display:block;color:var(--muted);margin-top:3px}
+.completed{background:#e8f5ea;color:#2e6a3e}
+.roi-dead{background:#f8e9e9;color:#894545}
+.manage-actions{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.manage-actions .btn{white-space:nowrap}
+.search-bar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+.search-bar input{width:100%;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:#fff}
+@media(max-width:760px){.search-bar{grid-template-columns:1fr}}
+
+.category-hint{display:flex;gap:7px;align-items:center;flex-wrap:wrap;padding:8px 10px;border:1px solid #dce8de;border-radius:11px;background:#f7fbf7;font-size:11.5px}
+.category-auto{background:#e9f2ff;color:#315f88}
+.care-log{padding:8px 10px;border-left:3px solid #6fa7bf;border-radius:0 10px 10px 0;background:#f6fbfd}
+.care-log small{display:block;color:var(--muted);margin-top:3px}
+.import-summary{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:10px 0}
+.import-summary .stat{min-height:auto;padding:9px 10px}
+.import-preview{max-height:280px;overflow:auto;display:grid;gap:6px}
+.import-preview-row{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 9px;font-size:12px}
+.import-warning{padding:9px 10px;border:1px solid #eadcb6;background:#fff9e8;border-radius:10px;color:#765d25;font-size:12px}
+.import-batch{display:flex;gap:8px;justify-content:space-between;align-items:center;padding:8px 9px;border:1px solid var(--line);border-radius:10px;background:#fff}
+.import-batch small{display:block;color:var(--muted);margin-top:3px}
+@media(max-width:760px){.import-summary{grid-template-columns:1fr 1fr}}
+
+.manage-modal .modal-box{width:min(860px,100%)}
+
+
+.scorebar{height:6px;border-radius:999px;background:#e9efea;overflow:hidden;margin-top:5px}
+.scorebar span{display:block;height:100%;background:linear-gradient(90deg,#79aa86,#d0ab4f)}
+.analytics-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.analytics-card{border:1px solid var(--line);border-radius:12px;padding:10px;background:#fff}
+.analytics-card strong{display:block;margin-bottom:4px}
+.suitability-card{display:flex;flex-direction:column;gap:7px;min-height:150px}
+.suitability-card .big-rate{font-size:24px;font-weight:900;line-height:1}
+.suitability-card .mini-stats{display:flex;gap:6px;flex-wrap:wrap}
+.suitability-card .mini-stats span{padding:4px 7px;border-radius:999px;background:#f2f6f1;border:1px solid var(--line);font-size:11px}
+.suitability-card .btn{margin-top:auto;align-self:flex-start}
+.detail-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.detail-summary .stat{min-height:auto;padding:10px}
+.detail-table{width:100%;border-collapse:collapse}
+.detail-table th,.detail-table td{padding:8px 7px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;font-size:12px}
+.detail-table th{font-size:11px;color:var(--muted);background:#f7faf6;position:sticky;top:0}
+.suitability-detail-list{max-height:430px;overflow:auto;border:1px solid var(--line);border-radius:12px}
+@media(max-width:760px){.detail-summary{grid-template-columns:1fr 1fr}}
+
+.stage-control{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:6px 0}
+.care-xp{display:inline-flex;align-items:center;gap:5px;padding:4px 8px;border-radius:999px;background:#eef4ff;border:1px solid #d8e5f4;color:#3d6183;font-size:11px;font-weight:800}
+.import-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.import-row input[type=file]{max-width:320px;font-size:12px}
+.harvest-yes{background:#e5f4e7;color:#2e6a3e}.harvest-no{background:#f2f2f2;color:#68706b}
+.cn-panel{display:grid;gap:8px;padding:10px;border:1px solid #dce7dd;border-radius:12px;background:#f8fbf7}
+.cn-result{font-weight:800;font-size:14px}
+.vendor-metric{font-size:11px;color:var(--muted);line-height:1.5}
+.log-list{display:grid;gap:7px;max-height:280px;overflow:auto;margin-top:10px}
+.log-item{border:1px solid var(--line);border-radius:10px;padding:8px 9px;background:#fff;font-size:12px}
+
+@media(max-width:760px){.analytics-grid{grid-template-columns:1fr}}
+
+.plant-hero{height:96px;background:radial-gradient(circle at 30% 20%,#e2f4e4 0%,#b8d8be 58%,#a2c9aa 100%);display:grid;place-items:center;font-size:44px;position:relative}
+.badge{position:absolute;top:10px;right:10px;padding:5px 9px;border-radius:999px;background:#163322;color:#fff;font-size:12px;font-weight:800}
+.plant-body{padding:12px 12px 13px}.plant-body h4{margin:0;font-size:15px;line-height:1.45}.plant-meta{font-size:11.7px;color:var(--muted);margin:7px 0 9px;display:grid;gap:4px}
+.plant-actions{display:flex;gap:5px;flex-wrap:wrap}.plant-actions button{border:0;background:#edf4ee;border-radius:8px;padding:6px 8px;font-size:11.5px}
+.tag{display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:999px;background:#edf4ea;border:1px solid #dbe8dd;font-size:11.5px;color:#31583d;font-weight:700}
+.tag.hot{background:#fff0da;color:#9a651d}.tag.cold{background:#e9f2ff;color:#37678e}
+.tag.gold{background:#fff3c6;color:#806015}
+.list{display:grid;gap:7px}.row{border:1px solid var(--line);border-radius:12px;padding:10px 11px;display:flex;align-items:center;justify-content:space-between;gap:10px;background:linear-gradient(180deg,#fff,#fbfdfb)}
+.row-main{min-width:0}.row-main strong{display:block}.row-main small{color:var(--muted)}
+.row-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px}
+table{width:100%;border-collapse:collapse;background:#fff;min-width:640px}
+th,td{padding:11px 12px;text-align:left;border-bottom:1px solid var(--line);font-size:13px}
+th{background:#f2f6f1;color:#5d6c62}.money{font-weight:800}
+.empty{padding:14px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:12px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px 10px}
+.field{display:grid;gap:6px}.field.full{grid-column:1/-1}.field label{font-size:12px;color:#607068;font-weight:700}
+.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:11px;padding:10px 11px;background:#fff;color:var(--text);outline:none;box-shadow:inset 0 1px 2px rgba(40,70,50,.03)}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:#7fb08b;box-shadow:0 0 0 3px rgba(47,122,75,.10)}
+.ai-box{border:1px solid #cfe2d2;background:linear-gradient(145deg,#f8fff8,#edf7ee);border-radius:15px;padding:12px}
+.ai-input{display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap}
+.ai-input input,.ai-input textarea{flex:1 1 100%;border:1px solid var(--line);border-radius:12px;padding:12px;resize:vertical;min-height:96px;line-height:1.6}
+.ai-input button{flex:0 0 auto}
+.preview{margin-top:12px;padding:13px;border-radius:14px;background:#fff;border:1px solid var(--line);display:none}.preview.show{display:block}
+.preview dl{display:grid;grid-template-columns:110px 1fr;margin:0;gap:7px;font-size:13px}.preview dt{color:var(--muted)}.preview dd{margin:0;font-weight:700}
+.ai-examples{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 0}
+.ai-examples button{border:1px solid #d8e5da;background:#fff;color:#365b41;border-radius:999px;padding:7px 10px;font-size:12px}
+.ai-examples button:hover{background:#edf7ee}
+.ai-capabilities{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:10px 0}
+.ai-cap{border:1px solid var(--line);border-radius:11px;padding:9px 10px;background:linear-gradient(180deg,#fff,#f7faf7);font-size:11.5px;color:#53655a;min-height:58px}
+.ai-cap strong{display:block;color:var(--text);margin-bottom:3px}
+.ai-warning{margin-top:10px;padding:9px 11px;border-radius:10px;background:#fff7df;color:#80631e;font-size:12px;display:none}
+.ai-warning.show{display:block}
+.tree{display:grid;gap:18px}
+.tree-node{border-left:4px solid #79a985;padding:10px 12px;margin-left:10px;background:#f8fbf7;border-radius:0 13px 13px 0}
+.tree-children{margin-left:28px;display:grid;gap:10px}
+.tree{gap:10px}
+.tree-node{position:relative;border-left:3px solid #79a985;padding:9px 10px;margin-left:6px;background:#f8fbf7;border-radius:0 11px 11px 0}
+.tree-node:before{content:"";position:absolute;left:-3px;top:18px;width:14px;height:2px;background:#79a985;transform:translateX(-100%)}
+.tree-children{margin-left:20px;padding-left:8px;border-left:1px dashed #bfd1c3;gap:7px}
+.generation-badge{display:inline-flex;align-items:center;padding:3px 7px;border-radius:999px;font-size:11px;font-weight:800;margin-right:5px}
+.gen-0{background:#fff2bd;color:#78580b}.gen-1{background:#dff1e3;color:#2d6840}.gen-2{background:#e5f0ff;color:#315d89}.gen-more{background:#eee8fa;color:#69558b}
+.lineage-summary{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.lineage-summary .tag{font-size:11px;padding:3px 7px}
+
+.camp-manager{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px;padding:10px 11px;border:1px solid #dce8de;border-radius:13px;background:linear-gradient(135deg,#f9fcf8,#f2f8f1)}
+.camp-manager input{flex:1;min-width:180px;border:1px solid var(--line);border-radius:11px;padding:10px 11px}
+.xpbar{height:6px;background:#e7eee8;border-radius:99px;overflow:hidden;margin-top:6px}
+.xpbar span{display:block;height:100%;background:var(--primary)}
+.flow-sold{background:#fff1cf;color:#865f10}.flow-gift{background:#f0eaff;color:#67508e}.flow-dead{background:#f5e4e4;color:#8d4545}
+.history-box{display:grid;gap:8px;max-height:340px;overflow:auto}
+.history-item{border-left:3px solid #86aa90;padding:8px 10px;background:#f8fbf7;border-radius:0 10px 10px 0;font-size:13px}
+.roi-positive{color:#2f7a4b;font-weight:800}.roi-negative{color:#a65151;font-weight:800}
+
+.hero-banner{background:linear-gradient(135deg,#173824 0%,#2f7a4b 72%,#3e8f59 100%);color:#fff;padding:18px 20px;border-radius:18px;margin-bottom:12px;position:relative;overflow:hidden;box-shadow:0 12px 30px rgba(34,95,57,.16)}
+.hero-banner:after{content:"🌿";position:absolute;font-size:88px;right:18px;top:-24px;opacity:.13}
+.hero-banner h2{margin:0 0 5px;font-size:21px}.hero-banner p{margin:0;color:#d9eadc;max-width:820px;font-size:12.8px;line-height:1.65}
+.kpi-line{height:8px;background:#e8efe8;border-radius:999px;overflow:hidden;margin-top:8px}.kpi-line span{display:block;height:100%;background:var(--primary)}
+.compost-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.compost-card{border:1px solid var(--line);border-radius:14px;padding:12px;background:linear-gradient(180deg,#fff,#f8fbf7);box-shadow:0 7px 18px rgba(44,77,55,.055)}
+.compost-card-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;margin-bottom:7px}
+.compost-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:8px 0}
+.compost-metric{border:1px solid #e1e9e2;background:#fff;border-radius:10px;padding:7px 8px}
+.compost-metric small{display:block;color:var(--muted);font-size:10px;margin-bottom:2px}
+.compost-metric strong{font-size:12.5px}
+.ratio-good{background:#e7f4e9;color:#2e6a3e}
+.ratio-wet{background:#e9f2ff;color:#35678e}
+.ratio-dry{background:#fff0dc;color:#93621e}
+.daily-log-list{display:grid;gap:6px;margin-top:10px;max-height:310px;overflow:auto}
+.daily-log{border:1px solid var(--line);border-radius:11px;padding:8px 9px;background:#fff}
+.daily-log-top{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.daily-log small{color:var(--muted)}
+.weather-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px}
+.weather-fetch{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:9px 10px;border-radius:11px;background:#f2f8ff;border:1px solid #dce9f5;margin-bottom:10px}
+.weather-fetch .note{flex:1;min-width:180px}
+.ratio-guide{padding:8px 10px;border-radius:10px;background:#f8fbf7;border:1px dashed #d7e4d9;font-size:11.5px;color:#5d6f62;margin-top:8px}
+@media(max-width:900px){.compost-grid{grid-template-columns:1fr}.compost-metrics{grid-template-columns:1fr 1fr}}
+
+.toast{position:fixed;right:20px;bottom:20px;background:#173923;color:#fff;padding:12px 16px;border-radius:12px;box-shadow:var(--shadow);opacity:0;transform:translateY(10px);pointer-events:none;transition:.25s;z-index:99}
+.toast.show{opacity:1;transform:translateY(0)}
+.modal{position:fixed;inset:0;background:rgba(16,28,20,.48);display:none;align-items:center;justify-content:center;padding:16px;z-index:100}
+.modal.show{display:flex}.modal-box{width:min(680px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:18px;padding:15px;box-shadow:0 30px 80px rgba(0,0,0,.25)}
+.modal-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}.modal-head h3{margin:0}
+.modal-foot{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+.icon-btn{width:36px;height:36px;border-radius:10px;border:0;background:#edf2ee}
+.pill{font-size:11px;padding:3px 7px;border-radius:999px;background:#edf4ea}
+.note{font-size:12px;color:var(--muted);line-height:1.6}
+@media(max-width:1100px){.plant-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.stats{grid-template-columns:repeat(2,1fr)}.grid.two{grid-template-columns:1fr}.grid.three{grid-template-columns:1fr 1fr}}
+@media(max-width:760px){.ai-capabilities{grid-template-columns:1fr 1fr}
+  .app{display:block}.sidebar{position:static;height:auto;padding:12px}.brand{padding-bottom:10px}.sidebar-foot{display:none}
+  .nav{grid-template-columns:repeat(4,1fr);overflow:auto}.nav button{font-size:0;justify-content:center;padding:10px}.nav button span{font-size:20px}
+  .main{padding:12px}.topbar{display:block}.actions{justify-content:flex-start;margin-top:9px}
+  .title h2{font-size:23px}.stats{grid-template-columns:1fr 1fr}.plant-grid{grid-template-columns:1fr}.grid.three{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}
+  .ai-input{flex-wrap:wrap}.ai-input input,.ai-input textarea{flex-basis:100%}.hero-banner{padding:13px 14px}
+}
+@media(max-width:430px){.stats{grid-template-columns:1fr}.nav{grid-template-columns:repeat(4,minmax(55px,1fr))}.main{padding:12px}.row{align-items:flex-start;flex-direction:column}.row-actions{justify-content:flex-start}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><div class="logo">🌱</div><div><h1>PlantCare Suite</h1><small>智慧植物與資材管理</small></div></div>
+    <div class="nav" id="nav">
+      <button class="active" data-page="dashboard"><span>🏡</span>總覽</button>
+      <button data-page="plants"><span>🪴</span>植物莊園</button>
+      <button data-page="lineage"><span>🌳</span>血統／英靈殿</button>
+      <button data-page="assistant"><span>🤖</span>AI 助手</button>
+      <button data-page="compost"><span>♻️</span>堆肥箱</button>
+      <button data-page="inventory"><span>🎒</span>道具背包</button>
+      <button data-page="shop"><span>👑</span>賣家比價</button>
+      <button data-page="expense"><span>💰</span>花園帳本</button>
+    </div>
+    <div class="sidebar-foot">資料儲存於目前瀏覽器 LocalStorage。</div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="title"><h2 id="pageTitle">莊園總覽</h2><p id="pageDesc">掌握植物、資材、支出與堆肥狀態。</p></div>
+      <div class="actions">
+        <button class="btn primary" onclick="openPlantModal()">＋ 新增植物</button>
+        <button class="btn" onclick="openQuickExpense()">＋ 記一筆支出</button>
+        <button class="btn ghost" onclick="resetDemo()">↻ 重置示範資料</button>
+      </div>
+    </div>
+
+    <section id="dashboard" class="page active">
+      <div class="hero-banner"><h2>🌿 今日莊園狀態</h2><p>植物照護、盆器庫存、堆肥進度與花費都集中在同一個地方。所有資料會即時保存於本機。</p></div>
+      <div class="lineage-summary" style="margin:-2px 0 10px">
+        <span class="tag">🎮 RPG 莊園模式</span>
+        <span class="tag">📍 多營地追蹤</span>
+        <span class="tag">🌳 血統世代</span>
+        <span class="tag">🤖 AI 指令</span>
+        <span class="tag">💰 金幣帳本</span>
+      </div>
+      <div class="stats" id="dashboardStats"></div>
+      <div class="grid two">
+        <div class="card"><div class="section-head"><h3>最近植物</h3><button class="btn" onclick="goPage('plants')">查看全部</button></div><div id="recentPlants" class="plant-grid"></div></div>
+        <div class="card"><h3>需要注意</h3><div id="alerts" class="list"></div></div>
+      </div>
+      <div class="card" style="margin-top:12px">
+        <div class="section-head"><h3>⚙️ 自動連動紀錄</h3><span class="note">系統自動加庫存、返還盆器、同步帳本或定位移防都會留痕。</span></div>
+        <div id="integrationLogList" class="list"></div>
+      </div>
+    </section>
+
+    <section id="plants" class="page">
+      <div class="card">
+        <div class="section-head">
+          <div><h3>植物角色卡</h3><div class="note">可依名稱、種類、類別、暱稱、營地或賣家搜尋。</div></div>
+          <div class="manage-actions">
+            <button class="btn" onclick="openCampManager()">📍 管理營地</button>
+            <button class="btn primary" onclick="openPlantTypeManager()">📥 匯入清單</button>
+          </div>
+        </div>
+        <div class="search-bar" style="margin-bottom:12px">
+          <input id="plantSearchInput" placeholder="🔎 搜尋植物，例如：鹿角蕨、香草、住家陽台、旋轉花市…" oninput="renderPlants()">
+          <button class="btn" onclick="clearPlantSearch()">清除</button>
+        </div>
+        <div class="camp-tabs" id="campTabs"></div>
+        <div class="plant-grid" id="plantGrid"></div>
+      </div>
+    </section>
+
+    <section id="lineage" class="page">
+      <div class="grid two">
+        <div class="card">
+          <div class="section-head"><h3>🌳 家族血統樹</h3><span class="pill">自動判斷世代</span></div>
+          <div class="lineage-summary">
+            <span class="generation-badge gen-0">👑 母株</span>
+            <span class="generation-badge gen-1">🌱 子株</span>
+            <span class="generation-badge gen-2">🌿 孫株</span>
+            <span class="generation-badge gen-more">🍃 第 4 代以上</span>
+          </div>
+          <div id="lineageTree" class="tree"></div>
+        </div>
+        <div class="card">
+          <div class="section-head"><h3>⚔️ 英靈殿</h3><span class="pill">歷史保留</span></div>
+          <div id="valhallaList" class="list"></div>
+          <div class="section-head" style="margin-top:12px"><h3>🧠 適養大分類分析</h3><span class="note">先看蕨類、蔬果／香草、觀葉等大分類；點「查看詳情」再看完整種類與個體資料。</span></div>
+          <div id="suitabilityList" class="analytics-grid"></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="modal manage-modal" id="suitabilityDetailModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="suitabilityDetailTitle">🧠 適養分析詳情</h3>
+      <button class="icon-btn" onclick="closeModal('suitabilityDetailModal')">✕</button>
+    </div>
+    <div id="suitabilityDetailSummary" class="detail-summary"></div>
+    <div class="section-head"><h3>植物種類統計</h3><span class="note">依此大分類底下的植物種類分開統計。</span></div>
+    <div id="suitabilityTypeDetail" class="list"></div>
+    <div class="section-head" style="margin-top:12px"><h3>全部個體資料</h3><span class="note">包含現役、死亡、花費、位置與死亡原因。</span></div>
+    <div class="suitability-detail-list">
+      <table class="detail-table">
+        <thead><tr><th>植物</th><th>種類／細分類</th><th>狀態</th><th>購入成本</th><th>目前位置</th><th>死亡原因</th></tr></thead>
+        <tbody id="suitabilityPlantDetail"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<section id="assistant" class="page">
+      <div class="card">
+        <div class="section-head">
+          <div>
+            <h3>🤖 AI 語音／文字智慧助理</h3>
+            <p class="note" style="margin:5px 0 0">可直接用自然語句操作植物、庫存、堆肥與帳本。任何資料變更都會先顯示預覽，確認後才寫入。</p>
+          </div>
+          <span class="tag">本機解析・先預覽後確認</span>
+        </div>
+
+        <div class="ai-capabilities">
+          <div class="ai-cap"><strong>🪴 植物</strong>新增、移動、換盆</div>
+          <div class="ai-cap"><strong>💧 照護</strong>澆水、採收、歸檔</div>
+          <div class="ai-cap"><strong>🎒 資材</strong>新增／補充庫存</div>
+          <div class="ai-cap"><strong>💰 管理</strong>支出、堆肥箱</div>
+        </div>
+
+        <div class="ai-box">
+          <div class="ai-input">
+            <textarea id="aiText" rows="4" placeholder="例如：新增植物鹿角蕨，暱稱小鹿，放在公司，用6吋盆，價格1200。可以一次講較長內容，也可以分多次按語音繼續追加。"></textarea>
+            <button class="btn" id="voiceBtn" onclick="startVoice()">🎙️ 開始語音</button>
+            <button class="btn ghost" onclick="clearAIText()">清空</button>
+            <button class="btn primary" onclick="parseAI()">✨ 解析指令</button>
+          </div>
+
+          <div id="voiceStatus" class="note" style="margin-top:8px">語音尚未啟動。再次按下「開始語音」會接在目前文字後方，不會覆蓋。</div>
+
+          <div class="ai-examples">
+            <button onclick="useAIExample('新增植物捕蠅草，種類捕蠅草，類別食蟲植物，來源店家，放在住家陽台，用4吋盆，價格250，等級1')">＋ 新增植物</button>
+            <button onclick="useAIExample('把3號搬到公司並換6吋盆')">📍 移動＋換盆</button>
+            <button onclick="useAIExample('幫3號澆水')">💧 澆水</button>
+            <button onclick="useAIExample('3號採收2份')">🌾 採收</button>
+            <button onclick="useAIExample('把3號歸檔到英靈殿')">⚔️ 英靈殿</button>
+            <button onclick="useAIExample('新增4吋盆庫存3個，單價55元')">🎒 新增庫存＋記帳</button>
+            <button onclick="useAIExample('記一筆盆器支出180元，名稱6吋陶盆')">💰 記錄支出</button>
+            <button onclick="useAIExample('新增堆肥箱B箱，C/N 30，溫度32度，夏季，60天')">♻️ 建立堆肥箱</button>
+          </div>
+
+          <div class="preview" id="aiPreview">
+            <div class="section-head" style="margin-bottom:10px">
+              <h3 style="margin:0">🔎 預覽確認卡片</h3>
+              <span class="tag" id="aiIntentTag">待解析</span>
+            </div>
+            <dl id="aiFields"></dl>
+            <div class="ai-warning" id="aiWarning"></div>
+            <div class="modal-foot">
+              <button class="btn" onclick="cancelAI()">取消</button>
+              <button class="btn primary" id="aiConfirmBtn" onclick="confirmAI()">確認變更</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:16px;box-shadow:none;background:#f8fbf7">
+          <h3>可理解的語句範例</h3>
+          <div class="note">
+            •「新增植物捕蠅草，種類捕蠅草，類別食蟲植物，來源店家，放在住家陽台，用4吋盆，價格250」<br>
+            •「把 2 號搬到住家陽台並換 6 吋盆」<br>
+            •「幫 1 號澆水」、「3 號採收 2 份」、「把 2 號歸檔到英靈殿」<br>
+            •「新增殺菌粉庫存 2 包，分類藥劑，單價 80 元」、「記一筆支出 300 元，分類運費，名稱宅配費」<br>
+            •「新增堆肥箱 C 箱，C/N 28，溫度 30 度，夏季，45 天」
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="compost" class="page">
+      <div class="grid two">
+        <div class="card">
+          <div class="section-head">
+            <h3>♻️ 新增堆肥箱</h3>
+            <span class="tag">乾濕比＋每日氣候追蹤</span>
+          </div>
+          <div class="form-grid">
+            <div class="field"><label>名稱</label><input id="compostName" placeholder="A 箱"></div>
+            <div class="field full">
+              <label>配料計算模式</label>
+              <select id="compostAmountMode" onchange="toggleCompostAmountMode()">
+                <option value="parts">🥣 份數模式</option>
+                <option value="weight">⚖️ 實際重量模式</option>
+              </select>
+              <div class="note" id="compostModeHint">份數模式：用相同容器或相同「一份」作為基準，例如碳材 2 份、氮材 1 份。</div>
+            </div>
+
+            <div class="field"><label>主要碳材（棕色料）</label><select id="compostCarbonMaterial" onchange="updateCNPreview()"><option value="80">乾落葉｜約 80:1</option><option value="110">稻草｜約 110:1</option><option value="129">辦公紙｜約 129:1</option><option value="170">報紙｜約 170:1</option><option value="350">碎紙板｜約 350:1</option><option value="500">木屑｜約 500:1</option></select></div>
+            <div class="field"><label>主要氮材（綠色料）</label><select id="compostNitrogenMaterial" onchange="updateCNPreview()"><option value="17">蔬果廚餘｜約 17:1</option><option value="20">草屑｜約 20:1</option><option value="20">咖啡渣｜約 20:1</option><option value="20">牛糞｜約 20:1</option><option value="25">馬糞｜約 25:1</option></select></div>
+
+            <div class="field" id="compostCarbonPartsGroup"><label>碳材份數</label><input id="compostCarbonParts" type="number" min="0.1" step="0.1" value="2" oninput="updateCNPreview()"></div>
+            <div class="field" id="compostNitrogenPartsGroup"><label>氮材份數</label><input id="compostNitrogenParts" type="number" min="0.1" step="0.1" value="1" oninput="updateCNPreview()"></div>
+
+            <div class="field" id="compostCarbonWeightGroup" style="display:none"><label>碳材實際重量</label><input id="compostCarbonWeight" type="number" min="0.001" step="0.01" value="2" oninput="updateCNPreview()"></div>
+            <div class="field" id="compostNitrogenWeightGroup" style="display:none"><label>氮材實際重量</label><input id="compostNitrogenWeight" type="number" min="0.001" step="0.01" value="1" oninput="updateCNPreview()"></div>
+            <div class="field" id="compostWeightUnitGroup" style="display:none"><label>重量單位</label><select id="compostWeightUnit" onchange="updateCNPreview()"><option value="kg">kg</option><option value="g">g</option></select></div>
+
+            <div class="field full"><label>初始配方 C/N 估算</label><div id="compostCNPreview" class="cn-panel"><div class="cn-result">估算中…</div></div></div>
+            <div class="field full"><div class="note">🥣 <strong>份數模式</strong>和 ⚖️ <strong>實際重量模式</strong>現在分開保存。重量模式使用同一重量單位（kg 或 g）計算；兩種模式都只用來估算「初始配方 C/N」。</div></div>
+            <div class="field"><label>每日補料乾料份數</label><input id="compostDry" type="number" min="0.1" step="0.1" value="2"></div>
+            <div class="field"><label>每日補料濕料份數</label><input id="compostWet" type="number" min="0.1" step="0.1" value="1"></div>
+            <div class="field"><label>目前氣溫 °C</label><input id="compostTemp" type="number" value="26"></div>
+            <div class="field"><label>季節</label><select id="compostSeason"><option>春</option><option>夏</option><option>秋</option><option>冬</option></select></div>
+            <div class="field"><label>基礎熟成天數</label><input id="compostDays" type="number" value="60"></div>
+            <div class="field"><label>開始日期</label><input id="compostStart" type="date"></div>
+            <div class="field full"><label>本次建置／材料成本</label><input id="compostPrice" type="number" min="0" step="1" value="0" placeholder="例如 500"></div>
+          </div>
+          <div class="ratio-guide">💡 <strong>初始配料</strong>與<strong>熟成成品</strong>要分開看：建立堆肥箱時，初始配方 C/N 約 <strong>25–30:1</strong> 較理想；熟成後穩定堆肥可把約 <strong>15–20:1</strong> 當作成品參考目標。<strong>份數模式與實際重量模式分開</strong>，可依當下是否有秤重資料選擇；網站不會假設 C/N 會隨天數自動精準下降，實際成品 C/N 仍需材料分析或檢測確認。</div>
+          <div class="modal-foot"><button class="btn primary" onclick="addCompost()">建立堆肥箱</button></div>
+        </div>
+
+        <div class="card">
+          <div class="section-head"><h3>📅 每日追蹤說明</h3><span class="pill">一箱一天一筆</span></div>
+          <div class="list">
+            <div class="row"><div class="row-main"><strong>🌦️ 天氣</strong><small>氣溫、相對濕度、降雨與天氣狀況</small></div></div>
+            <div class="row"><div class="row-main"><strong>🥬 乾濕比</strong><small>每日乾料份數、濕料份數與自動比例判斷</small></div></div>
+            <div class="row"><div class="row-main"><strong>⏳ 熟成判斷</strong><small>綜合時間、堆體降溫、含水、氣味與原料辨識度；15–20:1 只作成品 C/N 參考目標</small></div></div>
+            <div class="row"><div class="row-main"><strong>📝 歷史紀錄</strong><small>同一天再次儲存會更新當日資料，不會產生重複日期</small></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:12px">
+        <div class="section-head"><h3>🧪 堆肥箱</h3><span class="note">確認熟成完成後可一鍵轉入道具背包，例如「培養土 +1」，不需重複輸入。</span></div>
+        <div id="compostList" class="compost-grid"></div>
+      </div>
+    </section>
+
+    <section id="inventory" class="page">
+      <div class="grid two">
+        <div class="card">
+          <h3>🎒 道具背包</h3>
+          <div class="form-grid">
+            <div class="field"><label>資材名稱</label><input id="invName" placeholder="6 吋盆"></div>
+            <div class="field"><label>分類</label><select id="invType" onchange="toggleCustomField('invType','invTypeCustom')"><option>盆器</option><option>工具</option><option>肥料</option><option>培養土</option><option>病蟲害用品</option><option>其他</option></select><input id="invTypeCustom" style="display:none;margin-top:7px" placeholder="自行輸入資材分類"></div>
+            <div class="field"><label>數量</label><input id="invQty" type="number" min="0" value="1" oninput="updateInventoryCostPreview()"></div>
+            <div class="field"><label>單位</label><input id="invUnit" value="個"></div>
+            <div class="field"><label>單價（每單位）</label><input id="invPrice" type="number" min="0" step="1" value="0" oninput="updateInventoryCostPreview()"></div>
+            <div class="field"><label>預計同步帳本</label><div id="invCostPreview" class="ratio-guide">未填價格，不產生支出。</div></div>
+          </div>
+          <div class="note">💰 若單價大於 0，加入背包時會自動以「數量 × 單價」新增一筆花園帳本支出。</div>
+          <div class="modal-foot"><button class="btn primary" onclick="addInventory()">加入背包並同步</button></div>
+        </div>
+        <div class="card"><h3>目前庫存</h3><div id="inventoryList" class="list"></div><div class="section-head" style="margin-top:12px"><h3>🛠️ 損壞／報廢紀錄</h3><span class="note">保留日期、數量與原因</span></div><div id="inventoryDamageList" class="log-list"></div></div>
+      </div>
+    </section>
+
+    <section id="shop" class="page">
+      <div class="card">
+        <div class="section-head">
+          <div>
+            <h3>👑 賣家比價</h3>
+            <div class="note">CP 推薦＝有效存活成本 40%＋存活率 30%＋自動健康品質 20%＋售後 10%。健康品質由「到貨狀況＋實際存活結果」自動計算。👍 為使用者自己的商家標記，不影響客觀分數。</div>
+          </div>
+          <span class="tag gold">自動推薦</span>
+        </div>
+
+        <div class="form-grid">
+          <div class="field"><label>植物／商品</label><input id="vendorProduct" placeholder="例如：鹿角蕨"></div>
+          <div class="field"><label>賣家</label><input id="vendorName" placeholder="例如：園藝市集 A"></div>
+          <div class="field"><label>本次總金額</label><input id="vendorPrice" type="number" min="0" placeholder="例如 300"></div>
+          <div class="field"><label>購入株數</label><input id="vendorPurchasedQty" type="number" min="1" value="1"></div>
+          <div class="field"><label>目前存活株數</label><input id="vendorSurvivedQty" type="number" min="0" value="1"></div>
+          <div class="field"><label>到貨時整體狀況</label><select id="vendorArrivalCondition"><option value="5">很好</option><option value="4">良好</option><option value="3">普通</option><option value="2">偏弱</option><option value="1">很差</option></select></div>
+          <div class="field"><label>售後服務（1-5，可後續更新）</label><input id="vendorAfterSales" type="number" min="1" max="5" step="0.5" value="3"></div>
+        </div>
+
+        <div class="ratio-guide">
+          📌 例：300 元買 3 株只活 1 株 → 有效存活成本 = 300 ÷ 1 = 300 元／存活株。若存活率低、目前健康度差，即使原本單價便宜，CP 分數也會下降。
+        </div>
+
+        <div class="modal-foot"><button class="btn primary" onclick="addVendor()">新增比價資料</button></div>
+
+        <div class="table-wrap" style="margin-top:14px">
+          <table>
+            <thead><tr>
+              <th>植物／商品</th><th>賣家</th><th>購入</th><th>存活率</th><th>有效存活成本</th>
+              <th>健康品質</th><th>售後</th><th>CP 分數</th><th>系統推薦</th><th>我的標記</th><th>操作</th>
+            </tr></thead>
+            <tbody id="vendorBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="expense" class="page">
+      <div class="stats" id="expenseStats"></div>
+      <div class="grid two">
+        <div class="card">
+          <h3>💰 新增支出</h3>
+          <div class="form-grid">
+            <div class="field"><label>日期</label><input id="expDate" type="date"></div>
+            <div class="field"><label>分類</label><select id="expCategory" onchange="toggleCustomField('expCategory','expCategoryCustom')"><option>植物</option><option>盆器</option><option>培養土／介質</option><option>肥料</option><option>病蟲害用品</option><option>園藝工具</option><option>堆肥用品</option><option>其他</option></select><input id="expCategoryCustom" style="display:none;margin-top:7px" placeholder="自行輸入支出分類"></div>
+            <div class="field"><label>名稱</label><input id="expName" placeholder="鹿角蕨"></div>
+            <div class="field"><label>金額</label><input id="expAmount" type="number" min="0"></div>
+          </div>
+          <div class="modal-foot"><button class="btn primary" onclick="addExpense()">加入帳本</button></div>
+        </div>
+        <div class="card"><div class="section-head"><h3>最近收支</h3><span class="note">手動／同步支出皆可刪除</span></div><div id="expenseList" class="list"></div></div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <div class="section-head"><h3>🏆 單株 ROI 寶盒</h3><span class="note">死亡也不清零：保留購入成本與既有收益，無收益時視為沉沒成本。</span></div>
+        <div id="roiList" class="list"></div>
+      </div>
+      <div class="grid two" style="margin-top:12px">
+        <div class="card"><div class="section-head"><h3>📊 支出分類統計</h3><span class="note">各類園藝支出花多少</span></div><div id="expenseCategoryStats" class="list"></div></div>
+        <div class="card"><div class="section-head"><h3>🌿 植物種類成本</h3><span class="note">依植物購入紀錄統計</span></div><div id="plantTypeCostStats" class="list"></div></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="modal manage-modal" id="campManagerModal">
+  <div class="modal-box">
+    <div class="modal-head"><h3>📍 營地管理與定位</h3><button class="icon-btn" onclick="closeModal('campManagerModal')">✕</button></div>
+    <div class="camp-manager">
+      <input id="newCampName" placeholder="新增營地，例如：頂樓花園、客廳窗台、學校實驗室">
+      <button class="btn primary" onclick="addCamp()">＋ 新增營地</button>
+      <button class="btn" onclick="detectAndSuggestCamp()">📡 辨識目前位置</button>
+      <span class="note">每個營地可重新命名、設定 GPS 與辨識半徑。定位只保存在本機。</span>
+      <div id="campLocationStatus" class="ratio-guide" style="width:100%">尚未偵測目前位置。瀏覽器定位通常需 HTTPS 或 localhost。</div>
+      <div id="campManagerList" class="camp-location-list"></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal manage-modal" id="plantTypeManagerModal">
+  <div class="modal-box">
+    <div class="modal-head"><h3>📥 植物清單匯入</h3><button class="icon-btn" onclick="closeModal('plantTypeManagerModal')">✕</button></div>
+<div class="field" style="margin-top:8px">
+      <label>貼上一般清單／完整 Markdown</label>
+      <textarea id="plantTypeImport" rows="6" placeholder="可直接貼像業主資料一樣，包含「## 香草類」「## 工具設備」「## 鹿角蕨完整清單」「### 賣家」與表格的完整 Markdown。"></textarea>
+    </div>
+    <div class="import-row">
+      <button class="btn" onclick="importPlantTypes()">🔎 解析貼上內容</button>
+      <input id="plantTypeFile" type="file" accept=".md,.markdown,.csv,.txt,.json,.xlsx,.xls">
+      <button class="btn" onclick="importPlantTypeFile()">📥 解析檔案</button>
+      <span class="note">完整 Markdown 會自動分流到植物、道具背包、堆肥、賣家與帳本；一般 CSV／Excel 可匯入種類清單。新的植物種類也可直接在新增植物時輸入。</span>
+    </div>
+    <div class="import-warning" style="margin-top:9px">💡 完整 Markdown 會先預覽再確認；重複資料會跳過，最近完整匯入也能整批撤銷。</div>
+    <div id="plantTypeTags" class="master-tags"></div>
+    <div class="section-head" style="margin-top:12px"><h3>🧾 最近完整匯入</h3><span class="note">需要時可整批撤銷。</span></div>
+    <div id="importBatchList" class="list"></div>
+  </div>
+</div>
+
+<div class="modal manage-modal" id="fullImportPreviewModal">
+  <div class="modal-box">
+    <div class="modal-head"><h3>🧩 完整清單匯入預覽</h3><button class="icon-btn" onclick="closeModal('fullImportPreviewModal')">✕</button></div>
+    <div id="fullImportFileName" class="note"></div>
+    <div id="fullImportSummary" class="import-summary"></div>
+    <div id="fullImportWarnings"></div>
+    <div class="section-head" style="margin-top:12px"><h3>預覽部分內容</h3><span class="note">確認後才會真正寫入。</span></div>
+    <div id="fullImportPreview" class="import-preview"></div>
+    <div class="modal-foot"><button class="btn" onclick="closeModal('fullImportPreviewModal')">取消</button><button class="btn primary" onclick="applyFullImport()">✅ 確認整份匯入</button></div>
+  </div>
+</div>
+
+<div class="modal" id="plantModal">
+  <div class="modal-box">
+    <div class="modal-head"><h3 id="plantModalTitle">新增植物角色</h3><button class="icon-btn" onclick="closeModal('plantModal')">✕</button></div>
+
+    <input type="hidden" id="plantEditId">
+    <div class="form-grid">
+      <div class="field"><label>植物名稱／個體名稱 *</label><input id="plantName" placeholder="例如：爪哇鹿角蕨" oninput="schedulePlantAutoDetect()"></div>
+      <div class="field"><label>植物種類 *</label>
+        <input id="plantType" list="plantTypeList" placeholder="可直接輸入新種類，例如：捕蠅草" oninput="onPlantTypeChange();schedulePlantAutoDetect()">
+        <datalist id="plantTypeList"></datalist>
+        <div class="note">輸入不存在的新種類後，儲存植物時會自動加入種類清單。</div>
+      </div>
+
+      <div class="field"><label>植物類別（可自行修正）</label>
+        <select id="plantCategory" onchange="toggleCustomField('plantCategory','plantCategoryCustom')">
+          <option>蕨類</option><option>觀葉植物</option><option>多肉／仙人掌</option><option>蘭科</option>
+          <option>香草</option><option>蔬菜</option><option>果樹／水果</option><option>花卉</option>
+          <option>水生植物</option><option>草本／地被</option><option>木本植物</option><option>其他</option>
+        </select>
+        <input id="plantCategoryCustom" style="display:none;margin-top:7px" placeholder="自行輸入植物類別">
+        <div id="plantCategoryHint" class="note" style="margin-top:5px">輸入植物名稱後會自動判斷，可直接自行修正。</div>
+      </div>
+
+      <div class="field"><label>品種／學名</label><input id="plantVariety" placeholder="Platycerium"></div>
+      <div class="field"><label>暱稱</label><input id="plantNick" placeholder="小鹿"></div>
+      <div class="field"><label>實際成長階段</label><select id="plantLevel"><option value="1">Stage 1｜幼苗</option><option value="2">Stage 2｜成長株</option><option value="3">Stage 3｜成熟株</option><option value="4">Stage 4｜母株／可繁殖成熟株</option></select></div>
+      <div class="field"><label>繁殖／血統來源</label><select id="plantBloodline" onchange="toggleCustomField('plantBloodline','plantBloodlineCustom')"><option>購入苗／成株</option><option>種子／實生</option><option>分株／側芽</option><option>扦插</option><option>嫁接</option><option>孢子</option><option>球根／塊莖／走莖</option><option>組織培養</option><option>交配／雜交</option><option>來源不明</option><option>其他</option></select><input id="plantBloodlineCustom" style="display:none;margin-top:7px" placeholder="自行輸入繁殖／血統來源"></div>
+      <div class="field"><label>來源</label><select id="plantSource" onchange="togglePlantSourceCustom();togglePlantSeller()"><option>私人</option><option>店家</option><option>自繁</option><option>其他</option></select><input id="plantSourceCustom" style="display:none;margin-top:7px" placeholder="自行輸入來源"></div>
+      <div class="field" id="plantSellerField" style="display:none"><label>店家／賣家</label><select id="plantSeller"></select></div>
+      <div class="field" id="plantSellerScoreField" style="display:none"><label>推薦資訊</label><div id="plantSellerRecommendation" class="ratio-guide">尚無賣家資料。</div></div>
+      <div class="field"><label>營地</label><select id="plantCamp"></select></div>
+      <div class="field"><label>目前盆器</label><input id="plantPot" placeholder="6 吋盆"></div>
+      <div class="field"><label>購入價格</label><input id="plantPrice" type="number" min="0" value="0"></div>
+      <div class="field"><label>親本 A ID（自繁時可填）</label><input id="plantParent" placeholder="例如 1"></div>
+      <div class="field"><label>親本 B ID（雜交時可填）</label><input id="plantParentB" placeholder="例如 5"></div>
+      <div class="field"><label>採收能力</label><div id="plantHarvestInfo" class="ratio-guide">依植物種類清單自動判斷。</div></div>
+      <div class="field full"><label>備註</label><textarea id="plantNote" rows="3"></textarea></div>
+    </div>
+    <div class="modal-foot"><button class="btn" onclick="closeModal('plantModal')">取消</button><button class="btn primary" id="plantSaveBtn" onclick="savePlantForm()">建立植物</button></div>
+  </div>
+</div>
+
+<div class="modal" id="careModal">
+  <div class="modal-box" style="max-width:650px">
+    <div class="modal-head"><h3 id="careTitle">💧 照護紀錄</h3><button class="icon-btn" onclick="closeModal('careModal')">✕</button></div>
+    <input type="hidden" id="carePlantId">
+    <div class="form-grid">
+      <div class="field"><label>照護類型</label><select id="careType" onchange="toggleCustomField('careType','careTypeCustom')"><option>澆水</option><option>施肥</option><option>修剪</option><option>清潔</option><option>觀察</option><option>其他</option></select><input id="careTypeCustom" style="display:none;margin-top:7px" placeholder="自行輸入照護類型"></div>
+      <div class="field"><label>備註</label><input id="careNote" placeholder="例如：盆土乾燥後澆透"></div>
+    </div>
+    <div class="modal-foot"><button class="btn primary" onclick="addManualCareLog()">＋ 新增照護紀錄</button></div>
+    <div id="careContent" class="history-box"></div>
+  </div>
+</div>
+
+<div class="modal" id="splitModal">
+  <div class="modal-box">
+    <div class="modal-head"><h3>🌱 拆分側芽</h3><button class="icon-btn" onclick="closeModal('splitModal')">✕</button></div>
+    <input type="hidden" id="splitParentId">
+    <div class="form-grid">
+      <div class="field"><label>子株名稱 *</label><input id="splitName" placeholder="鹿角蕨側芽"></div>
+      <div class="field"><label>暱稱</label><input id="splitNick" placeholder="小鹿二代"></div>
+      <div class="field"><label>流向</label><select id="splitFlow" onchange="updateSplitFields()"><option value="keep">留養</option><option value="gift">贈與</option><option value="sold">出售</option></select></div>
+      <div class="field" id="splitCampField"><label>留養營地</label><select id="splitCamp"></select></div>
+      <div class="field"><label>子株盆器</label><input id="splitPot" placeholder="4 吋盆"></div>
+      <div class="field" id="splitRecipientField" style="display:none"><label>贈與對象</label><input id="splitRecipient" placeholder="小明"></div>
+      <div class="field" id="splitSaleField" style="display:none"><label>出售金額</label><input id="splitSalePrice" type="number" min="0" value="0"></div>
+      <div class="field full"><label>備註</label><textarea id="splitNote" rows="2"></textarea></div>
+    </div>
+    <div class="note">分株後會自動綁定母株 ID；若填寫盆器且選擇留養，會檢查並扣除對應盆器庫存。</div>
+    <div class="modal-foot"><button class="btn" onclick="closeModal('splitModal')">取消</button><button class="btn primary" onclick="confirmSplit()">建立子株</button></div>
+  </div>
+</div>
+
+<div class="modal" id="historyModal">
+  <div class="modal-box" style="max-width:620px">
+    <div class="modal-head"><h3 id="historyTitle">植物履歷</h3><button class="icon-btn" onclick="closeModal('historyModal')">✕</button></div>
+    <div id="historyContent" class="history-box"></div>
+  </div>
+</div>
+
+<div class="modal" id="compostDailyModal">
+  <div class="modal-box">
+    <div class="modal-head"><h3 id="compostDailyTitle">📅 堆肥每日紀錄</h3><button class="icon-btn" onclick="closeModal('compostDailyModal')">✕</button></div>
+    <input type="hidden" id="dailyCompostId">
+
+    <div class="weather-fetch">
+      <button class="btn" id="weatherFetchBtn" onclick="fetchCurrentWeather()">📍 自動取得目前天氣</button>
+      <div class="note" id="weatherFetchStatus">會使用瀏覽器定位取得目前所在地天氣；也可完全手動輸入。</div>
+    </div>
+
+    <div class="form-grid">
+      <div class="field"><label>紀錄日期</label><input id="dailyDate" type="date" onchange="loadDailyLogForDate()"></div>
+      <div class="field"><label>天氣狀況</label>
+        <select id="dailyWeather" onchange="toggleCustomField('dailyWeather','dailyWeatherCustom')">
+          <option>晴</option><option>多雲</option><option>陰</option><option>小雨</option><option>雨</option><option>雷雨</option><option>其他</option>
+        </select><input id="dailyWeatherCustom" style="display:none;margin-top:7px" placeholder="自行輸入天氣狀況">
+      </div>
+      <div class="field"><label>外部氣溫 °C</label><input id="dailyTemp" type="number" step="0.1"></div>
+      <div class="field"><label>相對濕度 %</label><input id="dailyHumidity" type="number" min="0" max="100" step="1"></div>
+      <div class="field"><label>堆體內部溫度 °C</label><input id="dailyPileTemp" type="number" step="0.1" placeholder="可手動量測，熱堆建議追蹤"></div>
+      <div class="field"><label>手握含水判斷</label><select id="dailyMoisture"><option>適中</option><option>偏乾</option><option>偏濕</option><option>未判斷</option></select></div>
+      <div class="field"><label>氣味判斷</label><select id="dailySmell"><option>土味／正常</option><option>輕微酸味</option><option>明顯異味</option><option>未判斷</option></select></div>
+      <div class="field"><label>原料辨識度</label><select id="dailyMaterialBreakdown"><option>多數可辨識</option><option>部分可辨識</option><option>大多無法辨識</option><option>未判斷</option></select></div>
+      <div class="field"><label>降雨量 mm</label><input id="dailyRain" type="number" min="0" step="0.1" value="0"></div>
+      <div class="field"><label>資料來源</label><input id="dailyWeatherSource" value="手動輸入" readonly></div>
+      <div class="field"><label>乾料份數</label><input id="dailyDry" type="number" min="0.1" step="0.1" oninput="updateDailyRatioPreview()"></div>
+      <div class="field"><label>濕料份數</label><input id="dailyWet" type="number" min="0.1" step="0.1" oninput="updateDailyRatioPreview()"></div>
+      <div class="field full"><label>當日乾濕比判斷</label><div id="dailyRatioPreview" class="ratio-guide">—</div></div>
+      <div class="field full"><label>備註</label><textarea id="dailyNote" rows="3" placeholder="例如：今日翻堆一次、加入落葉、偏濕有補乾料"></textarea></div>
+    </div>
+
+    <div class="modal-foot">
+      <button class="btn" onclick="closeModal('compostDailyModal')">取消</button>
+      <button class="btn primary" onclick="saveDailyCompostLog()">儲存今日紀錄</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="expenseModal">
+  <div class="modal-box" style="max-width:520px">
+    <div class="modal-head"><h3>快速記一筆支出</h3><button class="icon-btn" onclick="closeModal('expenseModal')">✕</button></div>
+    <div class="form-grid">
+      <div class="field"><label>日期</label><input id="quickExpDate" type="date"></div>
+      <div class="field"><label>分類</label><select id="quickExpCategory" onchange="toggleCustomField('quickExpCategory','quickExpCategoryCustom')"><option>植物</option><option>盆器</option><option>培養土／介質</option><option>肥料</option><option>園藝工具</option><option>其他</option></select><input id="quickExpCategoryCustom" style="display:none;margin-top:7px" placeholder="自行輸入支出分類"></div>
+      <div class="field"><label>名稱</label><input id="quickExpName"></div>
+      <div class="field"><label>金額</label><input id="quickExpAmount" type="number" min="0"></div>
+    </div>
+    <div class="modal-foot"><button class="btn" onclick="closeModal('expenseModal')">取消</button><button class="btn primary" onclick="addQuickExpense()">加入帳本</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const KEY='plantcare_suite_v1';
+const todayISO=()=>new Date().toISOString().slice(0,10);
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+const money=n=>new Intl.NumberFormat('zh-TW',{style:'currency',currency:'TWD',maximumFractionDigits:0}).format(Number(n||0));
+const daysAgo=date=>{
+  const d=Math.floor((new Date()-new Date(date))/(86400000));
+  if(d<=0)return '今天'; if(d===1)return '1 天前'; return d+' 天前';
+};
+let state;
+let currentCamp='全部';
+let pendingAI=null;
+
+function seedState(){
+  const now=Date.now();
+  return {
+    camps:['住家陽台','公司辦公桌','私人溫室'],
+    plants:[
+      {id:'1',type:'鹿角蕨',name:'鹿角蕨',variety:'Platycerium bifurcatum',nick:'小鹿',level:4,xp:120,bloodline:'原生',source:'私人',camp:'住家陽台',pot:'6 吋盆',price:1200,parentId:'',flow:'keep',lastWater:new Date(now-2*86400000).toISOString(),note:'主株',status:'alive',createdAt:now-500000,history:[{date:new Date(now-500000).toISOString(),type:'建立',text:'建立植物角色，駐紮住家陽台'}]},
+      {id:'2',type:'山蘇',name:'山蘇',variety:'Asplenium antiquum',nick:'阿蘇',level:2,xp:35,bloodline:'原生',source:'店家',camp:'私人溫室',pot:'8 吋盆',price:350,parentId:'',flow:'keep',lastWater:new Date(now-86400000).toISOString(),note:'',status:'alive',createdAt:now-400000,history:[{date:new Date(now-400000).toISOString(),type:'建立',text:'建立植物角色，駐紮私人溫室'}]},
+      {id:'3',type:'鹿角蕨',name:'鹿角蕨側芽',variety:'Platycerium bifurcatum',nick:'小鹿二號',level:1,xp:10,bloodline:'原生',source:'自繁',camp:'公司辦公桌',pot:'4 吋盆',price:0,parentId:'1',flow:'keep',splitDate:'2026-02-10',lastWater:new Date(now-4*86400000).toISOString(),note:'由 1 號分株',status:'alive',createdAt:now-300000,history:[{date:new Date(now-300000).toISOString(),type:'分株',text:'由 #1 鹿角蕨拆分，留養於公司辦公桌'}]},
+      {id:'4',type:'鹿角蕨',name:'鹿角蕨側芽 B',variety:'Platycerium bifurcatum',nick:'',level:1,xp:0,bloodline:'原生',source:'自繁',camp:'',pot:'',price:0,parentId:'1',flow:'sold',salePrice:650,splitDate:'2026-03-18',lastWater:new Date(now-100000).toISOString(),note:'示範出售流向',status:'sold',createdAt:now-200000,history:[{date:new Date(now-200000).toISOString(),type:'出售',text:'由 #1 鹿角蕨分株後售出，收入 NT$650'}]}
+    ],
+    inventory:[
+      {id:'i1',name:'4 吋盆',type:'盆器',qty:5,unit:'個',unitPrice:55},
+      {id:'i2',name:'6 吋盆',type:'盆器',qty:5,unit:'個',unitPrice:80},
+      {id:'i3',name:'8 吋盆',type:'盆器',qty:2,unit:'個',unitPrice:120},
+      {id:'i4',name:'培養土',type:'培養土',qty:3,unit:'包',unitPrice:150}
+    ],
+    compost:[{id:'c1',name:'A 箱',cn:28,dryParts:2,wetParts:1,temp:30,season:'夏',baseDays:60,start:todayISO(),price:600,dailyLogs:[
+      {date:todayISO(),weather:'多雲',temp:30,humidity:72,rain:0,dryParts:2,wetParts:1,note:'示範每日紀錄',source:'示範資料',updatedAt:new Date().toISOString()}
+    ]}],
+    vendors:[
+      {id:'v1',product:'鹿角蕨',seller:'園藝市集 A',totalPrice:300,price:300,purchasedQty:3,survivedQty:1,initialHealth:4.2,currentHealth:2.8,afterSales:3.5},
+      {id:'v2',product:'鹿角蕨',seller:'花市 B',totalPrice:360,price:360,purchasedQty:3,survivedQty:3,initialHealth:4.5,currentHealth:4.4,afterSales:4.3},
+      {id:'v3',product:'山蘇',seller:'網路店 C',totalPrice:240,price:240,purchasedQty:2,survivedQty:2,initialHealth:4.7,currentHealth:4.5,afterSales:4.6}
+    ],
+    expenses:[
+      {id:'e1',date:todayISO(),category:'植物',name:'鹿角蕨',amount:1200,plantId:'1'},
+      {id:'e2',date:todayISO(),category:'盆器',name:'6 吋盆',amount:180}
+    ],
+    incomes:[{id:'r1',date:'2026-03-18',category:'側芽出售',name:'鹿角蕨側芽 B',amount:650,parentId:'1',plantId:'4'}],
+    harvests:[]
+  };
+}
+function load(){
+  try{state=JSON.parse(localStorage.getItem(KEY))||seedState()}catch(e){state=seedState()}
+  normalize();
+}
+const PLANT_CLASSIFIER_API=window.PLANTCARE_CLASSIFIER_API||'';
+function guessPlantCategory(name,type=''){
+  const s=`${name||''} ${type||''}`.toLowerCase();
+  const rules=[
+    ['蕨類',/(蕨|fern|platycerium|asplenium|adiantum|nephrolepis|鳥巢蕨|山蘇|鐵線蕨)/],
+    ['蘭科',/(蘭|orchid|phalaenopsis|dendrobium|cattleya)/],
+    ['多肉／仙人掌',/(多肉|仙人掌|cactus|succulent|景天|石蓮|十二卷|haworthia|echeveria)/],
+    ['香草',/(九層塔|羅勒|薄荷|迷迭香|百里香|香菜|芫荽|鼠尾草|basil|mint|rosemary|thyme)/],
+    ['蔬菜',/(番茄|辣椒|茄子|小白菜|青江菜|萵苣|菠菜|空心菜|蔥|韭菜|tomato|pepper|lettuce|vegetable)/],
+    ['果樹／水果',/(草莓|藍莓|檸檬|柑橘|芭樂|番石榴|葡萄|無花果|蘋果|芒果|fruit|berry|citrus)/],
+    ['水生植物',/(荷花|睡蓮|水草|蓮花|aquatic|lotus|water lily)/],
+    ['花卉',/(玫瑰|菊|繡球|向日葵|杜鵑|茶花|茉莉|花卉|rose|hydrangea|sunflower)/],
+    ['觀葉植物',/(龜背芋|蔓綠絨|琴葉榕|虎尾蘭|黃金葛|海芋|竹芋|粗肋草|monstera|philodendron|pothos|calathea|ficus)/],
+    ['木本植物',/(樹|木|灌木|tree|shrub)/],
+    ['草本／地被',/(草|groundcover|herbaceous)/]
+  ];
+  const hit=rules.find(r=>r[1].test(s));
+  return {category:hit?hit[0]:'其他',confidence:hit?0.86:0.35,source:'本機規則'};
+}
+let plantDetectTimer=null;
+function schedulePlantAutoDetect(){
+  clearTimeout(plantDetectTimer);
+  plantDetectTimer=setTimeout(()=>autoDetectPlantCategory(false),350);
+}
+async function autoDetectPlantCategory(force=false){
+  const name=document.getElementById('plantName')?.value.trim()||'';
+  if(!name)return;
+  const typeEl=document.getElementById('plantType');
+  const exact=state.plantTypes.find(t=>name.includes(t)||t.includes(name));
+  if(exact){typeEl.value=exact;onPlantTypeChange();}
+  let result=guessPlantCategory(name,typeEl?.value||'');
+  if(PLANT_CLASSIFIER_API){
+    try{
+      const res=await fetch(PLANT_CLASSIFIER_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,type:typeEl?.value||''})});
+      if(res.ok){const data=await res.json();if(data.category)result={category:data.category,confidence:Number(data.confidence||.8),source:'後端／AI API'};}
+    }catch(e){}
+  }
+  const cat=document.getElementById('plantCategory');
+  if(cat && [...cat.options].some(o=>o.value===result.category))cat.value=result.category;
+  const hint=document.getElementById('plantCategoryHint');
+  if(hint)hint.innerHTML=`🤖 自動判斷：${esc(result.category)}（約 ${Math.round(result.confidence*100)}%）・判斷錯誤可直接修改。`;
+  toggleCustomField('plantCategory','plantCategoryCustom');
+}
+function toggleCustomField(selectId,inputId){
+  const s=document.getElementById(selectId),i=document.getElementById(inputId);if(!s||!i)return;
+  const show=s.value==='其他';i.style.display=show?'block':'none';if(!show)i.value='';
+}
+function togglePlantSourceCustom(){toggleCustomField('plantSource','plantSourceCustom')}
+function customOrSelected(selectId,inputId){
+  const s=document.getElementById(selectId),i=document.getElementById(inputId);if(!s)return '';
+  return s.value==='其他'?(i?.value.trim()||'其他'):s.value;
+}
+function rememberPlantClassification(type,category){
+  if(type&&!state.plantTypes.includes(type)){
+    state.plantTypes.push(type);
+    state.plantTypeMeta[type]=state.plantTypeMeta[type]||{harvestable:plantCategoryHarvestDefault(category),harvestUnit:category==='香草'?'g':'個'};
+  }
+  if(category&&category!=='其他'&&!state.plantCategories.includes(category))state.plantCategories.push(category);
+}
+function plantCategoryHarvestDefault(category){
+  if(['香草','蔬菜','果樹／水果'].includes(category))return true;
+  return false;
+}
+function normalize(){
+  state.plants=state.plants||[];state.inventory=state.inventory||[];state.compost=state.compost||[];
+  state.vendors=state.vendors||[];state.expenses=state.expenses||[];state.harvests=state.harvests||[];
+  state.incomes=state.incomes||[];
+  state.camps=state.camps||['住家陽台','公司辦公桌','私人溫室'];
+  state.plantTypes=state.plantTypes||['鹿角蕨','山蘇','龜背芋','觀葉植物','香草','蔬果'];
+  state.plantTypeMeta=state.plantTypeMeta||{};
+  state.plantCategories=state.plantCategories||['蕨類','觀葉植物','多肉／仙人掌','蘭科','香草','蔬菜','果樹／水果','花卉','水生植物','草本／地被','木本植物'];
+  state.plants.forEach(p=>{if(p.category&&p.category!=='其他'&&!state.plantCategories.includes(p.category))state.plantCategories.push(p.category);});
+  const defaultHarvest={蔬果:['顆',true],香草:['g',true]};
+  state.plantTypes.forEach(t=>{if(!state.plantTypeMeta[t])state.plantTypeMeta[t]={harvestable:!!defaultHarvest[t]?.[1],harvestUnit:defaultHarvest[t]?.[0]||'個'};});
+  state.inventoryLogs=state.inventoryLogs||[];
+  state.compostLogs=state.compostLogs||[];
+  state.campMeta=state.campMeta||{};
+  state.integrationLogs=state.integrationLogs||[];
+  state.importBatches=state.importBatches||[];
+  state.sourceAliases=state.sourceAliases||{};
+  state.vendorLikes=state.vendorLikes||{};
+  state.camps.forEach(c=>{if(!state.campMeta[c])state.campMeta[c]={lat:null,lon:null,radius:150};});
+  state.compost.forEach(c=>{
+    c.dryParts=Number(c.dryParts||2);c.wetParts=Number(c.wetParts||1);c.price=Number(c.price||0);
+    c.carbonRatio=Number(c.carbonRatio||80);c.nitrogenRatio=Number(c.nitrogenRatio||17);
+    c.mixMode=c.mixMode||'parts';
+    c.carbonParts=Number(c.carbonParts||2);c.nitrogenParts=Number(c.nitrogenParts||1);
+    c.carbonWeight=Number(c.carbonWeight||0);c.nitrogenWeight=Number(c.nitrogenWeight||0);c.weightUnit=c.weightUnit||'kg';
+    const cnCarbonAmount=c.mixMode==='weight'&&c.carbonWeight>0?c.carbonWeight:c.carbonParts;
+    const cnNitrogenAmount=c.mixMode==='weight'&&c.nitrogenWeight>0?c.nitrogenWeight:c.nitrogenParts;
+    c.cn=Number(c.cn||estimateCN(c.carbonRatio,cnCarbonAmount,c.nitrogenRatio,cnNitrogenAmount));
+    c.dailyLogs=Array.isArray(c.dailyLogs)?c.dailyLogs:[];c.status=c.status||'active';c.completedAt=c.completedAt||'';c.outputItem=c.outputItem||'';c.outputQty=Number(c.outputQty||0);
+  });
+  state.inventory.forEach(i=>{
+    i.unitPrice=Number(i.unitPrice||0);
+    i.importedSourceText=i.importedSourceText||'';
+    i.importedResolvedSource=i.importedResolvedSource||'';
+    i.importedStatusText=i.importedStatusText||'';
+    i.importedUseText=i.importedUseText||'';
+    i.importedNoteText=i.importedNoteText||'';
+  });
+  state.vendors.forEach(v=>{
+    v.totalPrice=Number(v.totalPrice??v.price??0);
+    v.purchasedQty=Math.max(1,Number(v.purchasedQty||1));
+    v.survivedQty=Math.max(0,Math.min(v.purchasedQty,Number(v.survivedQty??v.purchasedQty)));
+    v.arrivalCondition=Math.max(1,Math.min(5,Number(v.arrivalCondition??v.initialHealth??v.rating??3)));
+    v.afterSales=Math.max(1,Math.min(5,Number(v.afterSales||3)));
+  });
+  state.plants.forEach(p=>{
+    p.xp=Number.isFinite(Number(p.xp))?Number(p.xp):0;
+    p.level=Math.max(1,Math.min(4,Number(p.level||1))); // level now means real-world growth stage, never auto-derived from XP
+    p.type=p.type||p.name||'未分類';p.bloodline=p.bloodline||'來源不明';p.source=p.source||'未分類';p.flow=p.flow||'keep';p.history=p.history||[];
+    p.category=p.category||guessPlantCategory(p.name,p.type).category;
+    p.importedSourceText=p.importedSourceText||'';
+    p.importedResolvedSource=p.importedResolvedSource||'';
+    p.importedSourceType=p.importedSourceType||'';
+    p.importedStatusText=p.importedStatusText||'';
+    p.importedNoteText=p.importedNoteText||'';
+    p.importedClassification=p.importedClassification||'';
+    p.importedParentText=p.importedParentText||'';
+    p.importedSpecText=p.importedSpecText||'';
+    p.importedSourceDisplay=p.importedSourceText
+      ? `${p.importedSourceText}${p.source==='店家'?'店家':''}${p.importedResolvedSource&&p.importedResolvedSource!==p.importedSourceText?'・'+p.importedResolvedSource:''}`
+      : '';
+    p.careLogs=Array.isArray(p.careLogs)?p.careLogs:[];
+    if(!p.careHistoryMigrated){
+      const careRows=p.history.filter(h=>/(澆水|照護經驗)/.test(String(h.type||'')));
+      careRows.forEach(h=>p.careLogs.push({date:h.date,type:/澆水/.test(h.type)?'澆水':'照護',note:h.text||''}));
+      p.history=p.history.filter(h=>!/(澆水|照護經驗)/.test(String(h.type||'')));
+      p.careHistoryMigrated=true;
+    }
+    p.harvestable=(p.harvestable!==undefined)?!!p.harvestable:!!state.plantTypeMeta[p.type]?.harvestable;
+    p.harvestUnit=p.harvestUnit||state.plantTypeMeta[p.type]?.harvestUnit||'個';
+    p.parentB=p.parentB||'';
+    if(p.camp && !state.camps.includes(p.camp))state.camps.push(p.camp);
+  });
+}
+function save(){localStorage.setItem(KEY,JSON.stringify(state));renderAll()}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
+function goPage(id){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));
+  const map={
+    dashboard:['莊園總覽','掌握植物、資材、支出與堆肥狀態。'],
+    plants:['植物莊園','植物卡優先顯示；類別可自動判斷並人工修正，照護紀錄與生命履歷分流。'],
+    lineage:['血統與英靈殿','保留親本關係、流向與死亡植物履歷。'],
+    assistant:['AI 助手','自然語言先解析、預覽確認後才寫入資料。'],
+    compost:['綠色煉金堆肥箱','用實際碳材／氮材估算 C/N，並每日追蹤堆體與天氣。'],
+    inventory:['道具背包','管理資材數量、單價與購入支出同步。'],
+    shop:['賣家比價','以存活成本、存活率、品質與售後推薦店家。'],
+    expense:['花園總帳本','查看收支、同步購入紀錄，並可刪除錯誤支出。']
+  };
+  document.getElementById('pageTitle').textContent=map[id][0];
+  document.getElementById('pageDesc').textContent=map[id][1];
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.getElementById('nav').addEventListener('click',e=>{
+  const b=e.target.closest('button[data-page]');if(b)goPage(b.dataset.page);
+});
+function xpProgress(p){
+  return Math.min(100,Math.max(0,Number(p.xp||0)%100));
+}
+function addXP(p,amount,reason){
+  p.xp=Number(p.xp||0)+Number(amount||0);
+}
+function addIntegrationLog(type,text){
+  state.integrationLogs=state.integrationLogs||[];
+  state.integrationLogs.unshift({id:'ln'+Date.now()+Math.random().toString(36).slice(2,5),date:new Date().toISOString(),type,text});
+  state.integrationLogs=state.integrationLogs.slice(0,80);
+}
+function logPlant(p,type,text){
+  p.history=p.history||[];
+  p.history.unshift({date:new Date().toISOString(),type,text});
+}
+function renderPlantTypes(){
+  const list=document.getElementById('plantTypeList');
+  if(list)list.innerHTML=state.plantTypes.map(t=>`<option value="${esc(t)}"></option>`).join('');
+  const tags=document.getElementById('plantTypeTags');
+  if(tags)tags.innerHTML=state.plantTypes.map(t=>{
+    const m=state.plantTypeMeta[t]||{harvestable:false,harvestUnit:'個'};
+    return `<span class="type-tag">🌿 ${esc(t)} <span class="tag ${m.harvestable?'harvest-yes':'harvest-no'}">${m.harvestable?'🌾 可採收 '+esc(m.harvestUnit):'觀賞／不採收'}</span><button class="icon-btn" style="width:25px;height:25px" onclick="togglePlantTypeHarvest('${esc(t).replace(/'/g,"\\'")}')">↔</button></span>`;
+  }).join('');
+
+  const cat=document.getElementById('plantCategory');
+  if(cat){
+    const current=cat.value;
+    cat.innerHTML=[...state.plantCategories,'其他'].map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('');
+    if([...cat.options].some(o=>o.value===current))cat.value=current;
+  }
+}
+function addPlantType(){
+  const input=document.getElementById('newPlantType'),name=input.value.trim();
+  if(!name)return toast('請輸入植物種類');
+  if(state.plantTypes.includes(name))return toast('這個種類已存在');
+  state.plantTypes.push(name);
+  state.plantTypeMeta[name]={harvestable:document.getElementById('newPlantHarvestable').value==='true',harvestUnit:document.getElementById('newPlantHarvestUnit').value};
+  input.value='';save();toast('植物種類已新增');
+}
+function togglePlantTypeHarvest(name){
+  state.plantTypeMeta[name]=state.plantTypeMeta[name]||{harvestable:false,harvestUnit:'個'};
+  state.plantTypeMeta[name].harvestable=!state.plantTypeMeta[name].harvestable;
+  save();toast(`${name} 已改為${state.plantTypeMeta[name].harvestable?'可採收':'不採收'}`);
+}
+let pendingFullImport=null;
+function cleanMdHeading(s){return String(s||'').replace(/^#+\s*/,'').replace(/[🌿🌸🥬🌵🏠🌱🛠️📦📋]/g,'').trim()}
+function mdCells(line){return String(line||'').trim().replace(/^\||\|$/g,'').split('|').map(x=>x.trim())}
+function inferMarkdownHeaders(headerCells,h2=''){
+  const cells=(headerCells||[]).map(x=>String(x||'').trim());
+  const nonEmpty=cells.filter(Boolean);
+  const joined=nonEmpty.join(' ');
+
+  if(/來源代號對照表/.test(h2))return ['代號','正式名稱','位置','備註'];
+  if(/工具設備/.test(h2))return ['編號','項目','規格/數量','價格','來源','備註'];
+  if(/堆肥與資產系統資源/.test(h2))return ['項目','數量','狀態','用途','備註'];
+  if(/鹿角蕨完整清單/.test(h2))return ['品種','分類','親本','規格','價格','來源類型','狀態'];
+  if(/香草類|花卉類|蔬菜類|多肉類|觀葉類|蕨類與苔蘚/.test(h2))return ['編號','品種','數量/盆器','價格','來源','備註'];
+
+  if(nonEmpty.length>1)return cells;
+  return joined.split(/\s+/).filter(Boolean);
+}
+function parseMarkdownBlocks(text){
+  const lines=String(text||'').split(/\r?\n/),blocks=[];let h2='',h3='';
+  for(let i=0;i<lines.length;i++){
+    const line=lines[i].trim();
+    if(/^##\s+/.test(line)&&!/^###\s+/.test(line)){h2=cleanMdHeading(line);h3='';continue}
+    if(/^###\s+/.test(line)){h3=cleanMdHeading(line);continue}
+    if(line.startsWith('|')){
+      const t=[];
+      while(i<lines.length&&lines[i].trim().startsWith('|')){t.push(lines[i]);i++}
+      i--;
+      if(t.length>=2){
+        const parsed=t.map(mdCells);
+        const headers=inferMarkdownHeaders(parsed[0],h2);
+        const rows=parsed.filter((r,idx)=>idx!==1||!/---/.test(t[idx])).slice(1);
+        blocks.push({h2,h3,headers,rows});
+      }
+    }
+  }
+  return blocks;
+}
+function markdownRowObject(block,row){
+  const obj={};
+  (block.headers||[]).forEach((h,i)=>obj[String(h||'').trim()]=String(row?.[i]??'').trim());
+  return obj;
+}
+function importCategoryFromHeading(h){
+  if(/香草/.test(h))return '香草';if(/花卉/.test(h))return '花卉';if(/蔬菜/.test(h))return '蔬菜';
+  if(/多肉/.test(h))return '多肉／仙人掌';if(/觀葉/.test(h))return '觀葉植物';if(/蕨|苔蘚|鹿角蕨/.test(h))return '蕨類';return '其他'
+}
+function normalizeImportedPlantType(name,h2=''){
+  let s=String(name||'').trim();
+  if(/鹿角蕨完整清單/.test(h2))s=s.replace(/\s+P\.\s.*$/i,'');
+  s=s.replace(/#\d+/g,'').replace(/[（(]\s*No\.\s*\d+[^）)]*[）)]/ig,'').replace(/[（(](扦插苗|自撿|側芽|sporeling|TC)[^）)]*[）)]/ig,'');
+  return s.replace(/\s+/g,' ').trim()||String(name||'').trim()||'未分類'
+}
+function parseQtySpec(spec){
+  const raw=String(spec||'').trim();if(!raw)return [{pot:'',qty:1}];const out=[];
+  raw.split(/\s*\+\s*/).forEach(seg=>{
+    let m=seg.match(/^(.+?)\s*[×xX*]\s*(\d+)(?:\s*(株|盆|個|枝|片|顆))?$/);
+    if(m){out.push({pot:m[1].trim(),qty:Math.min(50,Number(m[2])||1)});return}
+    m=seg.match(/^(.*?)(\d+)\s*(盆|株|枝|片|個|顆|張|支|組|袋|麻袋)$/);
+    if(m){out.push({pot:(m[1]||m[3]).trim(),qty:Math.min(50,Number(m[2])||1)});return}
+    out.push({pot:raw,qty:1})
+  });return out
+}
+function parseInventoryQty(spec){
+  const s=String(spec||'').trim();let m=s.match(/(\d+(?:\.\d+)?)\s*(個|包|瓶|把|件|支|組|袋|麻袋|張|盆|株|片|kg|g)/i);
+  if(m)return {qty:Number(m[1]),unit:m[2]};m=s.match(/(\d+(?:\.\d+)?)/);return {qty:m?Number(m[1]):1,unit:'個'}
+}
+function makeImportKey(...xs){return xs.map(x=>String(x??'').trim().toLowerCase().replace(/\s+/g,' ')).join('|')}
+function parsePlantCareMarkdown(text,fileName='Markdown'){
+  const blocks=parseMarkdownBlocks(text),
+        aliases={},
+        r={fileName,plants:[],inventory:[],expenses:[],vendors:[],compost:[],sourceAliases:aliases,warnings:[],examples:[]},
+        agg={};
+
+  blocks.filter(b=>/來源代號對照表/.test(b.h2)).forEach(b=>b.rows.forEach(row=>{
+    const x=markdownRowObject(b,row);
+    const code=x['代號'],name=x['正式名稱'];
+    if(code&&name)aliases[code]={name,location:x['位置']||'',note:x['備註']||''};
+  }));
+
+  const resolve=raw=>String(raw||'').split(/[、,，+]/).map(x=>x.trim()).filter(Boolean).map(c=>aliases[c]?.name||c).join('、');
+  const sourceKind=(raw,resolved)=>{
+    const s=`${raw||''} ${resolved||''}`;
+    if(/自插|自分|自種|自長|自撿|分株|堆肥自發/.test(s))return '自繁';
+    if(/朋友|鄰居|贈|阿姨/.test(s))return '私人';
+    if(/花市|花園|園藝|苗圃|市場|農場|店|拼多多|甲|乙|丙|丁|向上|綠城|黎ㄟ|買入/.test(s))return '店家';
+    return '其他';
+  };
+  const blood=(name,src,note,parentText='')=>{
+    const s=`${name||''} ${src||''} ${note||''} ${parentText||''}`;
+    if(/扦插|自插/.test(s))return '扦插';
+    if(/分株|側芽|自分盆/.test(s))return '分株／側芽';
+    if(/自種|實生|種子|sporeling/i.test(s))return '種子／實生';
+    if(/[×xX]/.test(`${name||''} ${parentText||''}`))return '交配／雜交';
+    if(/買入/.test(s))return '購入苗／成株';
+    if(/贈品|贈送/.test(s))return '來源不明';
+    return '來源不明';
+  };
+  const harvest=(cat,name,note)=>/可食用|泡茶|食用|採收/.test(`${name||''} ${note||''}`)||cat==='蔬菜'||(cat==='香草'&&/(羅勒|九層塔|薄荷|鼠尾草|紫蘇|歐芹|香蜂草|迷迭香|百里香|馬鞭草|艾草)/.test(name||''));
+
+  function addPlant({
+    h2='',h3='',name='',spec='',price=0,sourceRaw='',sourceType='',
+    statusText='',note='',catOverride='',classification='',parentText=''
+  }){
+    name=String(name||'').trim();
+    if(!name)return;
+
+    const cat=catOverride||importCategoryFromHeading(h2),
+          type=/鹿角蕨完整清單/.test(h2)?'鹿角蕨':normalizeImportedPlantType(name,h2),
+          resolvedSource=resolve(sourceRaw),
+          seller=h3||resolvedSource,
+          source=sourceKind(`${sourceRaw} ${sourceType}`,seller),
+          rawStatus=String(statusText||'').trim(),
+          dead=/已死|死亡/.test(rawStatus),
+          pieces=parseQtySpec(spec),
+          total=pieces.reduce((a,b)=>a+b.qty,0)||1,
+          totalPrice=Number(price||0);
+    let idx=0;
+
+    pieces.forEach(pc=>{
+      for(let n=0;n<pc.qty;n++){
+        idx++;
+        const pprice=idx===total?totalPrice-(totalPrice/total)*(total-1):totalPrice/total;
+        const key=makeImportKey('plant',h2,h3,name,spec,sourceRaw,sourceType,rawStatus,n,total);
+
+        r.plants.push({
+          importKey:key,
+          name,
+          type,
+          category:cat,
+          variety:/鹿角蕨完整清單/.test(h2)?name:'',
+          nick:'',
+          level:/幼苗|小苗|扦插苗|側芽/.test(`${name} ${note}`)?1:2,
+          xp:0,
+          bloodline:blood(name,`${sourceType} ${sourceRaw}`,note,parentText),
+          source,
+          seller:source==='店家'?seller:'',
+          camp:'住家陽台',
+          pot:pc.pot||spec||'',
+          price:Math.max(0,pprice),
+          parentId:'',
+          parentB:'',
+          harvestable:harvest(cat,name,note),
+          harvestUnit:cat==='香草'?'g':cat==='蔬菜'?'g':'個',
+          flow:dead?'dead':'keep',
+          importedSourceText:String(sourceRaw||'').trim(),
+          importedResolvedSource:String(resolvedSource||'').trim(),
+          importedSourceType:String(sourceType||'').trim(),
+          importedStatusText:rawStatus,
+          importedNoteText:String(note||'').trim(),
+          importedClassification:String(classification||'').trim(),
+          importedParentText:String(parentText||'').trim(),
+          importedSpecText:String(spec||'').trim(),
+          note:String(note||'').trim()==='—'?'':String(note||'').trim(),
+          lastWater:null,
+          status:dead?'dead':'alive',
+          createdAt:Date.now(),
+          archivedAt:dead?new Date().toISOString():'',
+          deathCause:dead?(rawStatus||'匯入資料標示死亡'):'',
+          history:[{
+            date:new Date().toISOString(),
+            type:'清單匯入',
+            text:[
+              `由 ${fileName} 匯入`,
+              sourceRaw?`來源：${sourceRaw}`:'',
+              sourceType?`來源類型：${sourceType}`:'',
+              rawStatus?`狀態：${rawStatus}`:'',
+              note&&note!=='—'?`備註：${note}`:''
+            ].filter(Boolean).join('｜')
+          }],
+          careLogs:[]
+        });
+      }
+    });
+
+    if(/鹿角蕨完整清單/.test(h2)&&h3&&/買入/.test(sourceType||'')&&totalPrice>0){
+      const a=agg[h3]??={seller:h3,totalPrice:0,purchasedQty:0,survivedQty:0};
+      a.totalPrice+=totalPrice;
+      a.purchasedQty+=1;
+      if(!dead)a.survivedQty+=1;
+    }
+  }
+
+  blocks.forEach(b=>{
+    if(/香草類|花卉類|蔬菜類|多肉類|觀葉類|蕨類與苔蘚/.test(b.h2)){
+      b.rows.forEach(row=>{
+        const x=markdownRowObject(b,row);
+        if(!/^\d+$/.test(String(x['編號']||'').trim()))return;
+        addPlant({
+          h2:b.h2,name:x['品種'],spec:x['數量/盆器'],price:x['價格'],
+          sourceRaw:x['來源'],note:x['備註'],statusText:x['狀態']||''
+        });
+      });
+      return;
+    }
+
+    if(/鹿角蕨完整清單/.test(b.h2)&&b.h3){
+      b.rows.forEach(row=>{
+        const x=markdownRowObject(b,row);
+        if(!x['品種']||/^[-:]+$/.test(x['品種']))return;
+        addPlant({
+          h2:b.h2,h3:b.h3,name:x['品種'],classification:x['分類'],
+          parentText:x['親本'],spec:x['規格'],price:x['價格'],
+          sourceRaw:b.h3,sourceType:x['來源類型'],statusText:x['狀態'],
+          note:x['備註']||'',catOverride:'蕨類'
+        });
+      });
+      return;
+    }
+
+    if(/工具設備/.test(b.h2)){
+      b.rows.forEach(row=>{
+        const x=markdownRowObject(b,row);
+        if(!/^\d+$/.test(String(x['編號']||'').trim()))return;
+        const name=x['項目'],spec=x['規格/數量'],src=x['來源'],note=x['備註'];
+        if(!name)return;
+        const q=parseInventoryQty(spec),total=Number(x['價格']||0),
+              type=/盆/.test(name)?'盆器':/(土|水苔|椰)/.test(name)?'培養土':'工具',
+              resolved=resolve(src);
+        r.inventory.push({
+          importKey:makeImportKey('inv',name,spec,src,note),
+          name,type,qty:q.qty,unit:q.unit,unitPrice:q.qty?total/q.qty:0,
+          note:note&&note!=='—'?note:'',
+          seller:resolved,
+          importedSourceText:src||'',
+          importedResolvedSource:resolved||'',
+          importedNoteText:note||''
+        });
+        if(total>0)r.expenses.push({
+          importKey:makeImportKey('exp-tool',name,spec,src),
+          date:todayISO(),category:inventoryExpenseCategory(type),
+          name:`${name}（清單匯入）`,amount:total,source:'full-import',
+          seller:resolved,importedSourceText:src||'',note:note&&note!=='—'?note:''
+        });
+      });
+      return;
+    }
+
+    if(/堆肥與資產系統資源/.test(b.h2)){
+      b.rows.forEach(row=>{
+        const x=markdownRowObject(b,row);
+        const name=x['項目'],spec=x['數量'],status=x['狀態'],use=x['用途'],note=x['備註'];
+        if(!name)return;
+        if(/堆肥箱/.test(name)){
+          const box=(name.match(/堆肥箱\s*[A-Za-z0-9一二三四五六七八九十]+/)||[])[0]||name;
+          r.compost.push({
+            importKey:makeImportKey('compost',name,spec,status,note),
+            name:box,cn:30,mixMode:'parts',carbonRatio:80,nitrogenRatio:17,
+            carbonParts:2,nitrogenParts:1,carbonWeight:0,nitrogenWeight:0,weightUnit:'kg',
+            dryParts:2,wetParts:1,temp:26,season:'夏',baseDays:60,start:todayISO(),
+            price:0,dailyLogs:[],status:'active',
+            importedStatusText:status||'',
+            importedUseText:use||'',
+            importedNoteText:note||'',
+            note:[use&&use!=='—'?`用途：${use}`:'',note&&note!=='—'?note:''].filter(Boolean).join('｜')
+          });
+        }else{
+          const q=parseInventoryQty(spec);
+          r.inventory.push({
+            importKey:makeImportKey('asset',name,spec,status,use,note),
+            name,
+            type:/(木碎|甘蔗渣|龍眼木|樹皮)/.test(name)?'堆肥材料':'工具',
+            qty:q.qty,unit:q.unit,unitPrice:0,
+            note:[
+              status&&status!=='—'?`狀態：${status}`:'',
+              use&&use!=='—'?`用途：${use}`:'',
+              note&&note!=='—'?note:''
+            ].filter(Boolean).join('｜'),
+            importedStatusText:status||'',
+            importedUseText:use||'',
+            importedNoteText:note||''
+          });
+        }
+      });
+    }
+  });
+
+  Object.values(agg).forEach(a=>r.vendors.push({
+    importKey:makeImportKey('vendor','鹿角蕨',a.seller),
+    product:'鹿角蕨',seller:a.seller,totalPrice:a.totalPrice,price:a.totalPrice,
+    purchasedQty:a.purchasedQty,survivedQty:a.survivedQty,
+    arrivalCondition:3,afterSales:3,imported:true
+  }));
+
+  r.plants.filter(p=>p.price>0).forEach(p=>r.expenses.push({
+    importKey:makeImportKey('exp-plant',p.importKey),
+    date:todayISO(),category:'植物',name:`${p.name}（清單匯入）`,
+    amount:p.price,plantImportKey:p.importKey,plantType:p.type,
+    seller:p.seller||'',source:'full-import',
+    importedSourceText:p.importedSourceText||'',
+    importedStatusText:p.importedStatusText||'',
+    note:p.importedNoteText||''
+  }));
+
+  r.plantTypes=[...new Set(r.plants.map(p=>p.type).filter(Boolean))];
+  if(r.vendors.length)r.warnings.push('鹿角蕨賣家會依「買入」紀錄與死亡狀態彙整存活率；商品品質／售後仍可後續補充。');
+  r.warnings.push('來源、備註、狀態會保留原始文字；「已死／死亡」才會轉成英靈殿，像「穩定」「狀況差」會保留原狀態文字但仍視為現役。');
+  r.warnings.push('匯入的歷史死亡植物不會觸發盆器返庫，避免舊資料誤增加現在庫存。');
+
+  r.examples=[
+    ...r.plants.slice(0,5).map(p=>{
+      const src=p.importedSourceText
+        ? `${p.importedSourceText}${p.source==='店家'?'店家':''}${p.importedResolvedSource&&p.importedResolvedSource!==p.importedSourceText?`・${p.importedResolvedSource}`:''}`
+        : (p.seller||p.source||'—');
+      return `🌿 ${p.name}｜來源 ${src}｜狀態 ${p.importedStatusText||'—'}｜備註 ${p.importedNoteText||'—'}`;
+    }),
+    ...r.inventory.slice(0,3).map(i=>`🎒 ${i.name}｜來源 ${i.importedSourceText||'—'}｜備註 ${i.importedNoteText||i.note||'—'}`),
+    ...r.vendors.slice(0,3).map(v=>`👑 ${v.seller}｜購入 ${v.purchasedQty}／存活 ${v.survivedQty}`)
+  ];
+
+  return r;
+}
+function looksLikeFullMarkdown(text){return /##\s+.*(?:香草|花卉|工具設備|鹿角蕨|來源代號)/.test(String(text||''))&&/\|/.test(text)}
+function previewFullImport(text,fileName='貼上內容'){
+  pendingFullImport=parsePlantCareMarkdown(text,fileName);const r=pendingFullImport;
+  fullImportFileName.textContent=`來源：${fileName}`;
+  fullImportSummary.innerHTML=[['植物卡',r.plants.length,'🌿'],['背包資材',r.inventory.length,'🎒'],['帳本支出',r.expenses.length,'💰'],['賣家彙整',r.vendors.length,'👑'],['堆肥箱',r.compost.length,'♻️']].map(x=>`<div class="stat"><div class="k">${x[2]} ${x[0]}</div><div class="v">${x[1]}</div></div>`).join('');
+  fullImportWarnings.innerHTML=r.warnings.map(w=>`<div class="import-warning" style="margin-top:6px">${esc(w)}</div>`).join('');
+  fullImportPreview.innerHTML=r.examples.map(x=>`<div class="import-preview-row">${esc(x)}</div>`).join('')||'<div class="empty">沒有可預覽內容。</div>';fullImportPreviewModal.classList.add('show')
+}
+function existingImportKey(key){return !!key&&(state.plants.some(x=>x.importKey===key)||state.inventory.some(x=>x.importKey===key)||state.expenses.some(x=>x.importKey===key)||state.vendors.some(x=>x.importKey===key)||state.compost.some(x=>x.importKey===key))}
+function applyFullImport(){
+  const r=pendingFullImport;if(!r)return;const bid='imp'+Date.now(),b={id:bid,date:new Date().toISOString(),fileName:r.fileName,counts:{plants:0,inventory:0,expenses:0,vendors:0,compost:0},skipped:0},plantMap={};
+  Object.entries(r.sourceAliases||{}).forEach(([k,v])=>state.sourceAliases[k]=v);r.plantTypes.forEach(t=>{if(!state.plantTypes.includes(t))state.plantTypes.push(t)});
+  r.plants.forEach(p=>{if(existingImportKey(p.importKey)){b.skipped++;return}const o={...p,id:nextPlantId(),importBatchId:bid};state.plants.push(o);plantMap[p.importKey]=o.id;b.counts.plants++;state.plantTypeMeta[o.type]=state.plantTypeMeta[o.type]||{harvestable:o.harvestable,harvestUnit:o.harvestUnit||'個'}});
+  r.inventory.forEach(x=>{if(existingImportKey(x.importKey)){b.skipped++;return}state.inventory.push({...x,id:'i'+Date.now()+Math.random().toString(36).slice(2,6),importBatchId:bid});b.counts.inventory++});
+  r.compost.forEach(x=>{if(existingImportKey(x.importKey)){b.skipped++;return}state.compost.push({...x,id:'c'+Date.now()+Math.random().toString(36).slice(2,6),importBatchId:bid});b.counts.compost++});
+  r.vendors.forEach(x=>{if(existingImportKey(x.importKey)){b.skipped++;return}state.vendors.push({...x,id:'v'+Date.now()+Math.random().toString(36).slice(2,6),importBatchId:bid});b.counts.vendors++});
+  r.expenses.forEach(x=>{if(existingImportKey(x.importKey)){b.skipped++;return}const plantId=x.plantImportKey?plantMap[x.plantImportKey]||'':'';if(x.plantImportKey&&!plantId){b.skipped++;return}state.expenses.unshift({...x,id:'e'+Date.now()+Math.random().toString(36).slice(2,6),plantId,importBatchId:bid});b.counts.expenses++});
+  state.importBatches.unshift(b);state.importBatches=state.importBatches.slice(0,20);addIntegrationLog('完整清單匯入',`${r.fileName}：植物 ${b.counts.plants}、資材 ${b.counts.inventory}、帳本 ${b.counts.expenses}、賣家 ${b.counts.vendors}、堆肥 ${b.counts.compost}`);
+  pendingFullImport=null;closeModal('fullImportPreviewModal');save();toast(`匯入完成：植物 ${b.counts.plants}、資材 ${b.counts.inventory}`)
+}
+function renderImportBatches(){
+  const el=document.getElementById('importBatchList');if(!el)return;const rows=state.importBatches||[];
+  el.innerHTML=rows.length?rows.slice(0,8).map(b=>`<div class="import-batch"><div><strong>📥 ${esc(b.fileName)}</strong><small>${new Date(b.date).toLocaleString('zh-TW')}・植物 ${b.counts.plants}・資材 ${b.counts.inventory}・帳本 ${b.counts.expenses}・賣家 ${b.counts.vendors}・堆肥 ${b.counts.compost}</small></div><button class="btn" onclick="rollbackImportBatch('${b.id}')">↩️ 撤銷整批</button></div>`).join(''):'<div class="empty">尚無完整清單匯入。</div>'
+}
+function rollbackImportBatch(id){
+  const b=state.importBatches.find(x=>x.id===id);if(!b||!confirm(`確定撤銷「${b.fileName}」這批匯入？`))return;
+  state.plants=state.plants.filter(x=>x.importBatchId!==id);state.inventory=state.inventory.filter(x=>x.importBatchId!==id);state.expenses=state.expenses.filter(x=>x.importBatchId!==id);state.vendors=state.vendors.filter(x=>x.importBatchId!==id);state.compost=state.compost.filter(x=>x.importBatchId!==id);state.importBatches=state.importBatches.filter(x=>x.id!==id);save();toast('已撤銷整批匯入')
+}
+function isHeaderLike(s){return /^(植物|植物種類|種類|名稱|品種|name|type|plant)$/i.test(String(s||'').trim())}
+function addImportedType(name,harvestable=false,unit='個'){
+  name=String(name||'').trim();if(!name||isHeaderLike(name))return false;
+  if(!state.plantTypes.includes(name))state.plantTypes.push(name);
+  state.plantTypeMeta[name]=state.plantTypeMeta[name]||{harvestable:false,harvestUnit:'個'};
+  if(harvestable)state.plantTypeMeta[name].harvestable=true;
+  if(unit)state.plantTypeMeta[name].harvestUnit=unit;
+  return true;
+}
+function parseLooseRows(rows){
+  let added=0;
+  rows.forEach(row=>{
+    const cells=Array.isArray(row)?row:[row];
+    const clean=cells.map(x=>String(x??'').trim()).filter(Boolean);if(!clean.length)return;
+    let name=clean.find(x=>!isHeaderLike(x) && !/^(是|否|true|false|yes|no|可採收|不可採收|g|kg|個|顆|把|份)$/i.test(x));
+    if(!name)return;
+    const joined=clean.join(' ');
+    const harvestable=/(可採收|食用| edible |\btrue\b|\byes\b|^是$)/i.test(' '+joined+' ');
+    const unit=(clean.find(x=>/^(g|kg|個|顆|把|份)$/i.test(x))||'個');
+    if(addImportedType(name,harvestable,unit))added++;
+  });
+  return added;
+}
+function importPlantTypes(){
+  const raw=document.getElementById('plantTypeImport').value;if(!raw.trim())return toast('沒有可解析的內容');
+  if(looksLikeFullMarkdown(raw)){previewFullImport(raw,'貼上 Markdown');return}
+  const rows=raw.split(/\n+/).map(line=>line.split(/[,，\t;；]+/));const added=parseLooseRows(rows);document.getElementById('plantTypeImport').value='';save();toast(`已解析／更新 ${added} 筆種類`)
+}
+async function importPlantTypeFile(){
+  const f=document.getElementById('plantTypeFile').files[0];if(!f)return toast('請先選擇檔案');
+  try{
+    let rows=[];const ext=f.name.split('.').pop().toLowerCase();
+    if(ext==='md'||ext==='markdown'){previewFullImport(await f.text(),f.name);return}
+    if(ext==='json'){const raw=await f.text();const data=JSON.parse(raw),arr=Array.isArray(data)?data:(data.plants||data.types||[]);rows=arr.map(x=>typeof x==='string'?[x]:Object.values(x))}
+    else if(ext==='csv'||ext==='txt'){const raw=await f.text();if(looksLikeFullMarkdown(raw)){previewFullImport(raw,f.name);return}rows=raw.split(/\r?\n/).map(line=>line.split(/[,，\t;；]+/))}
+    else if(ext==='xlsx'||ext==='xls'){if(typeof XLSX==='undefined')return toast('Excel 解析元件未載入；可另存 CSV 或直接貼上');const buf=await f.arrayBuffer(),wb=XLSX.read(buf,{type:'array'}),ws=wb.Sheets[wb.SheetNames[0]];rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''})}
+    else return toast('目前支援 Markdown、CSV、TXT、JSON、XLSX、XLS');
+    const added=parseLooseRows(rows);save();toast(`檔案匯入完成：解析／更新 ${added} 筆`)
+  }catch(e){console.error(e);toast('檔案解析失敗，建議直接貼上 Markdown 或另存 CSV')}
+}
+function onPlantTypeChange(){
+  const type=document.getElementById('plantType').value,m=state.plantTypeMeta[type]||{harvestable:false,harvestUnit:'個'};
+  const el=document.getElementById('plantHarvestInfo');if(el)el.textContent=m.harvestable?`🌾 此種類設定為可採收，預設單位：${m.harvestUnit}`:'🚫 此種類預設不可採收；可在種類清單切換設定';
+  if(document.getElementById('plantSource').value==='店家')refreshPlantSellerOptions();
+}
+function effectiveSurvivalCost(v){
+  const total=Number(v.totalPrice ?? v.price ?? 0),surv=Number(v.survivedQty ?? 0);
+  return surv>0?total/surv:Infinity;
+}
+function vendorSurvivalRate(v){
+  const p=Math.max(1,Number(v.purchasedQty||1)),s=Math.max(0,Math.min(p,Number(v.survivedQty||0)));
+  return s/p;
+}
+function vendorHealthQuality(v){
+  const arrival=Math.max(1,Math.min(5,Number(v.arrivalCondition??3)));
+  const survival=vendorSurvivalRate(v)*5;
+  // One subjective input only. Long-term survival gets more weight.
+  return arrival*.4+survival*.6;
+}
+function vendorScoreDetails(v,group){
+  const costs=group.map(effectiveSurvivalCost).filter(Number.isFinite);
+  const cost=effectiveSurvivalCost(v);
+  const min=costs.length?Math.min(...costs):0,max=costs.length?Math.max(...costs):0;
+  const costScore=!Number.isFinite(cost)?0:(max===min?5:5-((cost-min)/(max-min))*4);
+  const survivalScore=vendorSurvivalRate(v)*5;
+  const healthScore=vendorHealthQuality(v);
+  const afterScore=Math.max(1,Math.min(5,Number(v.afterSales||3)));
+  const total=costScore*.40+survivalScore*.30+healthScore*.20+afterScore*.10;
+  return {total,costScore,survivalScore,healthScore,afterScore,cost};
+}
+function vendorScore(v,group){return vendorScoreDetails(v,group).total}
+function vendorQualityLabel(v){
+  const q=vendorHealthQuality(v),rate=vendorSurvivalRate(v);
+  if(rate>=.85&&q>=4.2)return ['🌟 品質佳','ratio-good'];
+  if(rate<.5||q<2.8)return ['⚠️ 品質偏弱','damage'];
+  return ['👀 普通／觀察','ratio-dry'];
+}
+function sellerLiked(name){return !!state.vendorLikes?.[name]}
+function toggleVendorLike(seller){
+  state.vendorLikes=state.vendorLikes||{};
+  state.vendorLikes[seller]=!state.vendorLikes[seller];
+  save();
+  toast(state.vendorLikes[seller]?`已按讚標記：${seller}`:`已取消按讚：${seller}`);
+}
+function togglePlantSeller(){
+  const isShop=document.getElementById('plantSource').value==='店家';
+  document.getElementById('plantSellerField').style.display=isShop?'grid':'none';document.getElementById('plantSellerScoreField').style.display=isShop?'grid':'none';
+  if(isShop)refreshPlantSellerOptions();
+}
+function refreshPlantSellerOptions(){
+  const sel=document.getElementById('plantSeller'),rec=document.getElementById('plantSellerRecommendation');
+  const type=document.getElementById('plantType')?.value||'';
+  let relevant=state.vendors.filter(v=>v.product===type);if(!relevant.length)relevant=state.vendors;
+  const sellers=[...new Set(relevant.map(v=>v.seller))];
+  sel.innerHTML=sellers.length?sellers.map(s=>`<option value="${esc(s)}">${esc(s)}${sellerLiked(s)?' 👍':''}</option>`).join(''):'<option value="">尚無賣家資料</option>';
+  const scored=relevant.map(v=>({v,d:vendorScoreDetails(v,relevant.filter(x=>x.product===v.product))})).sort((a,b)=>b.d.total-a.d.total);
+  const best=scored[0];
+  if(best){
+    const rate=Math.round(vendorSurvivalRate(best.v)*100),q=vendorHealthQuality(best.v);
+    rec.textContent=`👑 建議：${best.v.seller}｜CP ${best.d.total.toFixed(2)}/5｜存活率 ${rate}%｜健康品質 ${q.toFixed(1)}/5｜有效存活成本 ${Number.isFinite(best.d.cost)?money(best.d.cost):'無存活紀錄'}${sellerLiked(best.v.seller)?'｜👍 已按讚':''}`;
+  }else rec.textContent='尚無可比較的賣家資料。';
+}
+function populateCampSelect(id,selected=''){
+  const el=document.getElementById(id);if(!el)return;
+  el.innerHTML=state.camps.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
+  if(selected && state.camps.includes(selected))el.value=selected;
+}
+function renderCampManager(){
+  const el=document.getElementById('campManagerList');if(!el)return;
+  el.innerHTML=state.camps.map(c=>{
+    const m=state.campMeta[c]||{lat:null,lon:null,radius:150};
+    const bound=Number.isFinite(Number(m.lat))&&Number.isFinite(Number(m.lon));
+    const assigned=state.plants.filter(p=>p.status==='alive'&&p.camp===c).length;
+    return `<div class="camp-location-row">
+      <div><strong>📍 ${esc(c)}</strong><small>${assigned} 株現役植物・${bound?`GPS 已設定・辨識半徑 ${Number(m.radius||150)}m`:'尚未設定 GPS'}</small></div>
+      <div class="row-actions">
+        <button class="btn" onclick="bindCurrentLocationToCamp('${esc(c).replace(/'/g,"\\'")}')">📡 設目前位置</button>
+        <button class="btn" onclick="editCamp('${esc(c).replace(/'/g,"\\'")}')">✏️ 修改</button>
+        <button class="icon-btn" onclick="deleteCamp('${esc(c).replace(/'/g,"\\'")}')">🗑️</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function addCamp(){
+  const input=document.getElementById('newCampName');
+  const name=input.value.trim();
+  if(!name)return toast('請輸入營地名稱');
+  if(state.camps.includes(name))return toast('這個營地已存在');
+  state.camps.push(name);state.campMeta[name]={lat:null,lon:null,radius:150};input.value='';save();toast('已新增營地：'+name);
+}
+function editCamp(name){
+  if(!state.camps.includes(name))return;
+  const newName=(prompt('營地名稱：',name)||'').trim();
+  if(!newName)return;
+  if(newName!==name&&state.camps.includes(newName))return toast('已有同名營地');
+  const oldMeta=state.campMeta[name]||{lat:null,lon:null,radius:150};
+  const radius=Number(prompt('GPS 辨識半徑（公尺）：',String(oldMeta.radius||150)));
+  if(!Number.isFinite(radius)||radius<20||radius>3000)return toast('辨識半徑請設在 20～3000 公尺');
+  if(newName!==name){
+    state.camps=state.camps.map(c=>c===name?newName:c);
+    state.plants.forEach(p=>{if(p.camp===name){p.camp=newName;logPlant(p,'營地重新命名',`「${name}」改為「${newName}」`);}});
+    state.campMeta[newName]={...oldMeta,radius};delete state.campMeta[name];
+    if(currentCamp===name)currentCamp=newName;
+    addIntegrationLog('營地',`營地「${name}」已重新命名為「${newName}」，相關植物位置同步更新`);
+  }else state.campMeta[name]={...oldMeta,radius};
+  save();toast('營地設定已更新');
+}
+function deleteCamp(name){
+  const used=state.plants.some(p=>p.status==='alive'&&p.camp===name);
+  if(used)return toast('仍有現役植物在此營地，請先移防後再刪除');
+  if(!confirm(`確定刪除營地「${name}」？`))return;
+  state.camps=state.camps.filter(c=>c!==name);delete state.campMeta[name];
+  if(currentCamp===name)currentCamp='全部';
+  save();toast('營地已刪除');
+}
+function geoDistanceM(lat1,lon1,lat2,lon2){
+  const R=6371000,toRad=x=>x*Math.PI/180;
+  const dLat=toRad(lat2-lat1),dLon=toRad(lon2-lon1);
+  const a=Math.sin(dLat/2)**2+Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+function getCurrentPositionPromise(){
+  return new Promise((resolve,reject)=>{
+    if(!navigator.geolocation)return reject(new Error('此瀏覽器不支援定位'));
+    navigator.geolocation.getCurrentPosition(resolve,reject,{enableHighAccuracy:true,timeout:12000,maximumAge:120000});
+  });
+}
+async function bindCurrentLocationToCamp(name){
+  try{
+    const pos=await getCurrentPositionPromise(),lat=pos.coords.latitude,lon=pos.coords.longitude;
+    if(!confirm(`是否確認目前位置為「${name}」？\n定位精度約 ±${Math.round(pos.coords.accuracy||0)} 公尺。`))return;
+    const old=state.campMeta[name]||{radius:150};
+    state.campMeta[name]={lat,lon,radius:Number(old.radius||150),accuracy:Number(pos.coords.accuracy||0),updatedAt:new Date().toISOString()};
+    addIntegrationLog('定位',`已將目前 GPS 綁定到營地「${name}」`);
+    save();toast(`已設定「${name}」的定位`);
+  }catch(e){toast('定位失敗或未授權，請確認瀏覽器權限／HTTPS');}
+}
+function findNearestCamp(lat,lon){
+  const candidates=state.camps.map(name=>{
+    const m=state.campMeta[name]||{};
+    if(!Number.isFinite(Number(m.lat))||!Number.isFinite(Number(m.lon)))return null;
+    return {name,distance:geoDistanceM(lat,lon,Number(m.lat),Number(m.lon)),radius:Number(m.radius||150)};
+  }).filter(Boolean).sort((a,b)=>a.distance-b.distance);
+  return candidates[0]||null;
+}
+async function detectAndSuggestCamp(){
+  const status=document.getElementById('campLocationStatus');
+  try{
+    if(status)status.textContent='正在取得目前位置…';
+    const pos=await getCurrentPositionPromise(),near=findNearestCamp(pos.coords.latitude,pos.coords.longitude);
+    if(near && near.distance<=near.radius){
+      if(status)status.innerHTML=`📡 目前位置距「<strong>${esc(near.name)}</strong>」約 ${Math.round(near.distance)}m，位於設定的 ${near.radius}m 範圍內。`;
+      if(confirm(`系統判斷目前可能位於「${near.name}」（約 ${Math.round(near.distance)}m）。\n是否確認目前位置為「${near.name}」？`)){
+        toast(`目前位置已辨識為：${near.name}`);
+      }
+    }else{
+      const boundCount=state.camps.filter(c=>Number.isFinite(Number(state.campMeta[c]?.lat))).length;
+      if(status)status.textContent=boundCount?'目前位置不在任何已設定營地的辨識範圍內。':'目前還沒有營地設定 GPS。';
+      const list=state.camps.map((c,i)=>`${i+1}. ${c}`).join('\n');
+      const v=prompt(`未辨識到已設定營地。\n若你現在就在某個營地，可以輸入序號把目前 GPS 綁定給它：\n${list}\n\n取消則不做變更。`,'');
+      if(v===null||v.trim()==='')return;
+      const idx=Number(v);
+      if(Number.isInteger(idx)&&idx>=1&&idx<=state.camps.length){
+        const name=state.camps[idx-1];
+        if(confirm(`確認將目前位置設定為「${name}」？`)){
+          const old=state.campMeta[name]||{radius:150};
+          state.campMeta[name]={lat:pos.coords.latitude,lon:pos.coords.longitude,radius:Number(old.radius||150),accuracy:Number(pos.coords.accuracy||0),updatedAt:new Date().toISOString()};
+          addIntegrationLog('定位',`首次綁定營地「${name}」GPS`);
+          save();toast(`已綁定「${name}」`);
+        }
+      }
+    }
+  }catch(e){
+    if(status)status.textContent='定位失敗或未授權。請確認瀏覽器定位權限；本機檔案可能無法使用定位，建議 HTTPS 部署。';
+    toast('定位失敗或未授權');
+  }
+}
+async function movePlantToCurrent(id){
+  const p=state.plants.find(x=>x.id===id);if(!p)return;
+  try{
+    const pos=await getCurrentPositionPromise(),near=findNearestCamp(pos.coords.latitude,pos.coords.longitude);
+    if(!near||near.distance>near.radius){
+      toast('目前位置沒有符合的已設定營地，請先設定營地 GPS');
+      detectAndSuggestCamp();return;
+    }
+    if(p.camp===near.name)return toast(`植物已在「${near.name}」`);
+    if(!confirm(`目前位置判斷為「${near.name}」（約 ${Math.round(near.distance)}m）。\n是否將「${p.name}」從「${p.camp||'未設定'}」移到目前位置？`))return;
+    const old=p.camp;p.camp=near.name;logPlant(p,'定位移防',`由「${old||'未設定'}」移至目前位置「${near.name}」（GPS 約 ${Math.round(near.distance)}m）`);
+    addIntegrationLog('定位移防',`${p.name}：${old||'未設定'} → ${near.name}`);
+    save();toast(`已移到目前位置：${near.name}`);
+  }catch(e){toast('定位失敗或未授權');}
+}
+function openCampManager(){renderCampManager();document.getElementById('campManagerModal').classList.add('show')}
+function openPlantTypeManager(){renderPlantTypes();renderImportBatches();document.getElementById('plantTypeManagerModal').classList.add('show')}
+function resetPlantForm(){
+  document.getElementById('plantEditId').value='';
+  document.getElementById('plantModalTitle').textContent='新增植物角色';
+  document.getElementById('plantSaveBtn').textContent='建立植物';
+  ['plantName','plantVariety','plantNick','plantPot','plantParent','plantParentB','plantNote'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('plantPrice').value=0;
+  document.getElementById('plantLevel').value='1';
+  document.getElementById('plantBloodline').value='購入苗／成株';
+  document.getElementById('plantSource').value='私人';
+  document.getElementById('plantSourceCustom').value='';document.getElementById('plantSourceCustom').style.display='none';
+  document.getElementById('plantBloodlineCustom').value='';document.getElementById('plantBloodlineCustom').style.display='none';
+  document.getElementById('plantCategory').value='其他';
+  document.getElementById('plantCategoryCustom').value='';document.getElementById('plantCategoryCustom').style.display='none';
+  document.getElementById('plantType').value='';
+}
+function openPlantModal(editId=''){
+  renderPlantTypes();
+  populateCampSelect('plantCamp');
+  resetPlantForm();
+  if(editId){
+    const p=state.plants.find(x=>x.id===editId);if(!p)return;
+    document.getElementById('plantEditId').value=p.id;
+    document.getElementById('plantModalTitle').textContent=`✏️ 編輯 #${p.id} ${p.name}`;
+    document.getElementById('plantSaveBtn').textContent='儲存修改';
+    document.getElementById('plantName').value=p.name||'';
+    document.getElementById('plantType').value=p.type||'';
+    const catValue=p.category||guessPlantCategory(p.name,p.type).category,catSel=document.getElementById('plantCategory');
+    if([...catSel.options].some(o=>o.value===catValue)){catSel.value=catValue;document.getElementById('plantCategoryCustom').value='';}else{catSel.value='其他';document.getElementById('plantCategoryCustom').value=catValue;}toggleCustomField('plantCategory','plantCategoryCustom');
+    document.getElementById('plantVariety').value=p.variety||'';
+    document.getElementById('plantNick').value=p.nick||'';
+    document.getElementById('plantLevel').value=String(p.level||1);
+    const bloodSel=document.getElementById('plantBloodline'),bloodVal=p.bloodline||'來源不明';
+    if([...bloodSel.options].some(o=>o.value===bloodVal)){bloodSel.value=bloodVal;document.getElementById('plantBloodlineCustom').value='';}else{bloodSel.value='其他';document.getElementById('plantBloodlineCustom').value=bloodVal;}toggleCustomField('plantBloodline','plantBloodlineCustom');
+    const sourceSel=document.getElementById('plantSource'),sourceVal=p.source||'其他';
+    if([...sourceSel.options].some(o=>o.value===sourceVal)){sourceSel.value=sourceVal;document.getElementById('plantSourceCustom').value='';}else{sourceSel.value='其他';document.getElementById('plantSourceCustom').value=sourceVal;}togglePlantSourceCustom();
+    document.getElementById('plantCamp').value=p.camp||state.camps[0]||'';
+    document.getElementById('plantPot').value=p.pot||'';
+    document.getElementById('plantPrice').value=Number(p.price||0);
+    document.getElementById('plantParent').value=p.parentId||'';
+    document.getElementById('plantParentB').value=p.parentB||'';
+    document.getElementById('plantNote').value=p.note||'';
+    togglePlantSeller();
+    if(p.seller && [...document.getElementById('plantSeller').options].some(o=>o.value===p.seller))document.getElementById('plantSeller').value=p.seller;
+    document.getElementById('plantCategoryHint').innerHTML='<span class="tag">✏️ 目前為已儲存分類</span> 可手動修改，或按「重新判斷」。';
+  }else{
+    togglePlantSeller();onPlantTypeChange();
+  }
+  document.getElementById('plantModal').classList.add('show');
+}
+function openQuickExpense(){document.getElementById('quickExpDate').value=todayISO();document.getElementById('expenseModal').classList.add('show')}
+function closeModal(id){document.getElementById(id).classList.remove('show')}
+function nextPlantId(){
+  const nums=state.plants.map(p=>Number(p.id)).filter(Number.isFinite);
+  return String((Math.max(0,...nums))+1);
+}
+function savePlantForm(){
+  const editId=document.getElementById('plantEditId').value;
+  if(editId)updatePlant(editId);else addPlant();
+}
+function readPlantForm(){
+  const name=document.getElementById('plantName').value.trim();
+  if(!name){toast('植物名稱不可空白');return null;}
+  const parentId=document.getElementById('plantParent').value.trim(),parentB=document.getElementById('plantParentB').value.trim();
+  if(parentId && !state.plants.some(x=>x.id===parentId)){toast('找不到親本 A ID');return null;}
+  if(parentB && !state.plants.some(x=>x.id===parentB)){toast('找不到親本 B ID');return null;}
+  const type=document.getElementById('plantType').value.trim();
+  if(!type){toast('請輸入植物種類');return null;}
+  const category=customOrSelected('plantCategory','plantCategoryCustom');
+  if(document.getElementById('plantCategory').value==='其他'&&!document.getElementById('plantCategoryCustom').value.trim()){toast('植物類別選「其他」時，請自行輸入類別');return null;}
+  if(document.getElementById('plantBloodline').value==='其他'&&!document.getElementById('plantBloodlineCustom').value.trim()){toast('繁殖／血統來源選「其他」時，請自行輸入內容');return null;}
+  if(document.getElementById('plantSource').value==='其他'&&!document.getElementById('plantSourceCustom').value.trim()){toast('來源選「其他」時，請自行輸入內容');return null;}
+  const meta=state.plantTypeMeta[type]||{harvestable:plantCategoryHarvestDefault(category),harvestUnit:category==='香草'?'g':'個'};
+  return {
+    name,type,category,variety:document.getElementById('plantVariety').value.trim(),
+    nick:document.getElementById('plantNick').value.trim(),level:Number(document.getElementById('plantLevel').value),
+    bloodline:customOrSelected('plantBloodline','plantBloodlineCustom'),source:customOrSelected('plantSource','plantSourceCustom'),
+    seller:document.getElementById('plantSource').value==='店家'?document.getElementById('plantSeller').value:'',
+    camp:document.getElementById('plantCamp').value,pot:document.getElementById('plantPot').value.trim(),
+    price:Number(document.getElementById('plantPrice').value||0),parentId,parentB,
+    harvestable:!!meta.harvestable,harvestUnit:meta.harvestUnit||'個',note:document.getElementById('plantNote').value.trim()
+  };
+}
+function addPlant(){
+  const f=readPlantForm();if(!f)return;
+  rememberPlantClassification(f.type,f.category);
+  const p={id:nextPlantId(),...f,xp:0,flow:'keep',lastWater:null,status:'alive',createdAt:Date.now(),history:[],careLogs:[]};
+  logPlant(p,'建立',`建立植物角色，分類「${p.category}」，駐紮「${p.camp}」${p.parentId?`，親本 A #${p.parentId}`:''}`);
+  state.plants.push(p);
+  if(p.price>0){state.expenses.unshift({id:'e'+Date.now(),date:todayISO(),category:'植物',name:p.name+'（購入）',amount:p.price,plantId:p.id,plantType:p.type,seller:p.seller||''});addIntegrationLog('植物購入',`${p.name} 建立後自動同步帳本 ${money(p.price)}`);}
+  closeModal('plantModal');save();toast('植物已建立');
+}
+function updatePlant(id){
+  const p=state.plants.find(x=>x.id===id);if(!p)return;
+  const f=readPlantForm();if(!f)return;
+  const old={name:p.name,type:p.type,category:p.category,camp:p.camp,pot:p.pot,price:Number(p.price||0),source:p.source,seller:p.seller};
+  rememberPlantClassification(f.type,f.category);
+  Object.assign(p,f);
+  const changes=[];
+  ['name','type','category','camp','pot','source','seller'].forEach(k=>{if(String(old[k]||'')!==String(p[k]||''))changes.push(`${k}: ${old[k]||'—'} → ${p[k]||'—'}`);});
+  if(old.price!==Number(p.price||0))changes.push(`price: ${old.price} → ${p.price}`);
+
+  // Linked purchase expense follows card edits, so user does not need to edit two places.
+  let exp=state.expenses.find(e=>e.plantId===p.id&&e.category==='植物');
+  if(p.price>0){
+    if(exp){exp.amount=p.price;exp.name=p.name+'（購入）';exp.plantType=p.type;exp.seller=p.seller||'';}
+    else state.expenses.unshift({id:'e'+Date.now(),date:todayISO(),category:'植物',name:p.name+'（購入）',amount:p.price,plantId:p.id,plantType:p.type,seller:p.seller||'',source:'plant-edit'});
+  }else if(exp && old.price>0){
+    if(confirm('購入價格已改為 0。是否一併刪除這株植物連動的購入支出？'))state.expenses=state.expenses.filter(e=>e.id!==exp.id);
+  }
+
+  if(changes.length)logPlant(p,'資料修改',changes.join('；'));
+  addIntegrationLog('植物修改',`#${p.id} ${p.name} 的卡片資料已更新${old.price!==p.price?'，購入帳本同步調整':''}`);
+  closeModal('plantModal');save();toast('植物資料已更新');
+}
+function levelVisual(level){
+  const lv=Number(level||1);
+  if(lv<=1)return {icon:'🌱', role:'幼苗', desc:'實際成長階段：幼苗（不受照護 XP 自動影響）', heroClass:'level-1', ring:'✨'};
+  if(lv===2)return {icon:'🪴', role:'成長株', desc:'實際成長階段：成長株', heroClass:'level-2', ring:'🍃'};
+  if(lv===3)return {icon:'🌿', role:'成熟株', desc:'實際成長階段：成熟株', heroClass:'level-3', ring:'⭐'};
+  return {icon:'👑', role:'母株', desc:'實際成長階段：母株／可繁殖成熟株', heroClass:'level-4', ring:'🏅'};
+}
+function flowLabel(p){
+  if(p.status==='dead')return ['🪦 英靈殿','flow-dead'];
+  if(p.flow==='sold'||p.status==='sold')return ['💰 已出售','flow-sold'];
+  if(p.flow==='gift'||p.status==='gift')return ['🎁 已贈與','flow-gift'];
+  return ['🌱 留養',''];
+}
+function plantCard(p){
+  const fl=flowLabel(p), pct=xpProgress(p), lv=levelVisual(p.level);
+  return `<article class="plant-card">
+    <div class="plant-hero level-hero ${lv.heroClass}">
+      <div class="level-icon">${lv.icon}</div>
+      <span class="badge">${lv.icon} Stage ${p.level}</span>
+      <span class="level-role">${lv.role}</span>
+      <span class="level-ring">${lv.ring}</span>
+    </div>
+    <div class="plant-body">
+      <h4>#${esc(p.id)} ${esc(p.name)} ${p.nick?`・${esc(p.nick)}`:''}</h4>
+      <div class="level-desc">${lv.desc}</div>
+      <div class="plant-meta">
+        <span>📍 ${esc(p.camp||'無現役營地')}</span>
+        <span>🏺 ${esc(p.pot||'未設定盆器')}</span>
+        <span>🌿 種類 ${esc(p.type||'未分類')}・${esc(p.category||'其他')}</span>
+        ${p.bloodline&&p.bloodline!=='來源不明'?`<span>🧬 ${esc(p.bloodline)}</span>`:''}
+        ${p.importedSourceText
+          ? `<span>📥 原始來源：${esc(p.importedSourceText)}${p.source==='店家'?'店家':''}${p.importedResolvedSource&&p.importedResolvedSource!==p.importedSourceText?`・${esc(p.importedResolvedSource)}`:''}${p.importedSourceType&&p.importedSourceType!=='買入'?`・${esc(p.importedSourceType)}`:''}</span>`
+          : `<span>📍 來源：${esc(p.source||'未分類')}${p.seller?`・${esc(p.seller)}`:''}</span>`}
+        ${p.importedStatusText?`<span>📌 匯入狀態：${esc(p.importedStatusText)}</span>`:''}
+        ${p.note?`<span>📝 備註：${esc(p.note)}</span>`:''}
+        ${p.importedClassification?`<span>🧬 鹿角蕨分類：${esc(p.importedClassification)}${p.importedParentText&&p.importedParentText!=='—'?`・親本 ${esc(p.importedParentText)}`:''}</span>`:''}
+        <span>🌳 ${p.parentId?`母株 #${esc(p.parentId)}`:'家族根節點'}</span>
+        <span>💧 上次澆水：${p.lastWater?daysAgo(p.lastWater):'尚未紀錄'}</span>
+        <span><span class="level-badge ${lv.heroClass}">${lv.icon} Stage ${p.level}・${lv.role}</span> <span class="tag ${fl[1]}">${fl[0]}</span></span>
+        <span class="care-xp">⭐ 照護 XP ${p.xp}</span>
+        <span>${p.harvestable?`🌾 可採收・${esc(p.harvestUnit)}`:`🚫 此種類不採收`}</span>
+        <div class="xpbar"><span style="width:${pct}%"></span></div>
+      </div>
+      <div class="plant-actions">
+        <button onclick="waterPlant('${p.id}')">💧 澆水</button>
+        <button onclick="openCare('${p.id}')">🫗 照護紀錄</button>
+        <button onclick="openPlantModal('${p.id}')">✏️ 修改</button>
+        <button onclick="movePlant('${p.id}')">📍 移防</button>
+        <button onclick="movePlantToCurrent('${p.id}')">📡 移到現址</button>
+        <button onclick="repotPlant('${p.id}')">🏺 換盆</button>
+        ${p.harvestable?`<button onclick="harvestPlant('${p.id}')">🌾 採收</button>`:""}<button onclick="changeGrowthStage('${p.id}')">🌱 成長階段</button>
+        <button onclick="openHistory('${p.id}')">📜 履歷</button>
+        <button onclick="openSplit('${p.id}')">🌱 分株</button>
+        <button onclick="archivePlant('${p.id}')">⚔️ 英靈殿</button>
+      </div>
+    </div>
+  </article>`;
+}
+function changeGrowthStage(id){
+  const p=state.plants.find(x=>x.id===id);if(!p)return;
+  const labels=['','Stage 1 幼苗','Stage 2 成長株','Stage 3 成熟株','Stage 4 母株／可繁殖成熟株'];
+  const v=Number(prompt(`目前：${labels[p.level]}\n請輸入 1～4。此欄位代表實際觀察到的成長階段，不由澆水或 XP 自動提升。`,String(p.level)));
+  if(![1,2,3,4].includes(v))return toast('請輸入 1～4');
+  if(v===p.level)return toast('成長階段未變更');
+  const old=p.level;p.level=v;logPlant(p,'成長階段',`${labels[old]} → ${labels[v]}（人工依實際生長狀況判定）`);save();toast('成長階段已更新');
+}
+function addCareLog(p,type,note=''){
+  p.careLogs=p.careLogs||[];
+  p.careLogs.unshift({date:new Date().toISOString(),type,note});
+  p.careLogs=p.careLogs.slice(0,300);
+}
+function waterPlant(id){
+  const p=state.plants.find(x=>x.id===id);if(!p)return;
+  p.lastWater=new Date().toISOString();addXP(p,1,'澆水');addCareLog(p,'澆水','完成澆水');
+  save();toast('澆水已記到「照護紀錄」，照護 XP +1；不列入生命履歷');
+}
+function openCare(id){
+  const p=state.plants.find(x=>x.id===id);if(!p)return;
+  document.getElementById('carePlantId').value=id;
+  document.getElementById('careTitle').textContent=`💧 #${p.id} ${p.name}｜照護紀錄`;
+  renderCareContent(p);
+  document.getElementById('careModal').classList.add('show');
+}
+function renderCareContent(p){
+  const rows=(p.careLogs||[]).slice().sort((a,b)=>new Date(b.date)-new Date(a.date));
+  document.getElementById('careContent').innerHTML=rows.length?rows.map(h=>`<div class="care-log"><strong>${esc(h.type)}</strong><div>${esc(h.note||'')}</div><small>${new Date(h.date).toLocaleString('zh-TW')}</small></div>`).join(''):'<div class="empty">尚無照護紀錄。</div>';
+}
+function addManualCareLog(){
+  const p=state.plants.find(x=>x.id===document.getElementById('carePlantId').value);if(!p)return;
+  const type=customOrSelected('careType','careTypeCustom'),note=document.getElementById('careNote').value.trim();
+  if(document.getElementById('careType').value==='其他'&&!document.getElementById('careTypeCustom').value.trim())return toast('請輸入自訂照護類型');
+  addCareLog(p,type,note);
+  if(type==='澆水')p.lastWater=new Date().toISOString();
+  document.getElementById('careNote').value='';
+  save();renderCareContent(p);toast('照護紀錄已新增');
+}
+function movePlant(id){
+  const p=state.plants.find(x=>x.id===id);if(!p)return;
+  const choices=state.camps.map((c,i)=>`${i+1}. ${c}`).join('\n');
+  const v=prompt(`輸入新營地名稱，或輸入序號：\n${choices}`,p.camp);if(v===null)return;
+  let nv=v.trim();
+  const idx=Number(nv);
+  if(Number.isInteger(idx)&&idx>=1&&idx<=state.camps.length)nv=state.camps[idx-1];
+  if(!nv)return toast('營地不可空白');
+  if(!state.camps.includes(nv)){
+    if(confirm(`「${nv}」不是既有營地，是否直接新增為新營地？`))state.camps.push(nv);else return;
+  }
+  if(nv===p.camp)return toast('植物已在此營地');
+  const old=p.camp;p.camp=nv;addXP(p,3,'移防');logPlant(p,'移防',`由「${old||'未設定'}」移至「${nv}」`);save();toast('營地已更新，並保留移防履歷');
+}
+function findInvPot(name){return state.inventory.find(i=>i.type==='盆器'&&i.name.trim()===name.trim())}
+function repotPlant(id){
+  const p=state.plants.find(x=>x.id===id);if(!p)return;
+  const np=prompt('輸入新盆器尺寸（例：6 吋盆）',p.pot||'');if(np===null)return;
+  const newPot=np.trim();if(!newPot)return toast('盆器不可空白');if(newPot===p.pot)return toast('與目前盆器相同');
+  const item=findInvPot(newPot);
+  if(!item)return toast('背包中找不到「'+newPot+'」');
+  if(item.qty<=0)return toast(newPot+' 庫存不足');
+  if(!confirm(`確定使用 1 個「${newPot}」？庫存將 -1。`))return;
+  const old=p.pot||'未設定';item.qty-=1;p.pot=newPot;
+  let returned=false;
+  if(old!=='未設定'&&old!==newPot&&confirm(`舊盆器「${old}」是否仍可使用並返還道具背包？`)){
+    let oldItem=findInvPot(old);
+    if(oldItem)oldItem.qty+=1;else state.inventory.push({id:'i'+Date.now(),name:old,type:'盆器',qty:1,unit:'個',unitPrice:0});
+    returned=true;state.inventoryLogs.unshift({id:'il'+Date.now(),date:new Date().toISOString(),name:old,type:'換盆返庫',qty:1,reason:`${p.name} 換盆後返還`});
+  }
+  addXP(p,3,'換盆');logPlant(p,'換盆',`${old} → ${newPot}；${newPot} 庫存 -1${returned?`；${old} 返庫 +1`:''}`);
+  addIntegrationLog('換盆',`${p.name} 使用 ${newPot} -1${returned?`，舊 ${old} +1`:''}`);
+  save();toast(returned?'換盆完成：新盆扣庫存、舊盆已返庫':'換盆完成，新盆庫存 -1');
+}
+function archivePlant(id){
+  const p=state.plants.find(x=>x.id===id);if(!p)return;
+  if(!confirm(`確定將「${p.name}」歸檔至英靈殿？盆器會自動釋放回庫存。`))return;
+  const cause=(prompt('請輸入死亡原因（可留空）：','')||'未紀錄').trim()||'未紀錄';
+  p.status='dead';p.flow='dead';p.deathCause=cause;p.archivedAt=new Date().toISOString();
+  if(p.pot){
+    let item=findInvPot(p.pot);
+    if(item)item.qty+=1;else state.inventory.push({id:'i'+Date.now(),name:p.pot,type:'盆器',qty:1,unit:'個'});
+    p.potReturned=true;
+  }
+  logPlant(p,'英靈殿',`死亡原因：${cause}${p.pot?`；${p.pot} 已自動返還庫存`:''}`);
+  if(p.pot)addIntegrationLog('英靈殿',`${p.name} 死亡歸檔，盆器 ${p.pot} 自動返庫 +1`);
+  save();toast('已進入英靈殿，盆器已自動返庫');
+}
+function harvestPlant(id){
+  const p=state.plants.find(x=>x.id===id);if(!p)return;
+  if(!p.harvestable)return toast('此植物種類設定為不可採收');
+  const qty=prompt(`記錄「${p.name}」採收數量：`,'1');if(qty===null)return;
+  const n=Number(qty);if(!Number.isFinite(n)||n<=0)return toast('採收數量需大於 0');
+  const unit=(prompt('採收單位：',p.harvestUnit||'個')||p.harvestUnit||'個').trim();
+  state.harvests.unshift({id:'h'+Date.now(),plantId:id,qty:n,unit,date:todayISO()});
+  addXP(p,10,'採收');logPlant(p,'採收',`${n} ${unit}`);save();toast('採收紀錄已新增，XP +10');
+}
+function openHistory(id){
+  const p=state.plants.find(x=>x.id===id);if(!p)return;
+  document.getElementById('historyTitle').textContent=`📜 #${p.id} ${p.name} 履歷`;
+  const rows=(p.history||[]).filter(h=>!/(澆水|照護經驗)/.test(String(h.type||''))).slice().sort((a,b)=>new Date(b.date)-new Date(a.date));
+  const importMeta=(p.importedSourceText||p.importedStatusText||p.importedNoteText||p.importedClassification||p.importedParentText)
+    ? `<div class="history-item"><strong>📥 原始匯入資料</strong><div>${[
+        p.importedSourceText?`原始來源：${esc(p.importedSourceText)}${p.source==='店家'?'店家':''}${p.importedResolvedSource&&p.importedResolvedSource!==p.importedSourceText?`・${esc(p.importedResolvedSource)}`:''}`:'',
+        p.importedSourceType?`來源類型：${esc(p.importedSourceType)}`:'',
+        p.importedStatusText?`狀態：${esc(p.importedStatusText)}`:'',
+        p.importedClassification?`分類：${esc(p.importedClassification)}`:'',
+        p.importedParentText&&p.importedParentText!=='—'?`親本：${esc(p.importedParentText)}`:'',
+        p.importedNoteText&&p.importedNoteText!=='—'?`備註：${esc(p.importedNoteText)}`:''
+      ].filter(Boolean).join('｜')}</div></div>`
+    : '';
+  document.getElementById('historyContent').innerHTML=importMeta+(rows.length?rows.map(h=>`<div class="history-item"><strong>${esc(h.type)}</strong><div>${esc(h.text)}</div><small>${new Date(h.date).toLocaleString('zh-TW')}</small></div>`).join(''):'<div class="empty">尚無履歷。</div>');
+  document.getElementById('historyModal').classList.add('show');
+}
+function openSplit(id){
+  const p=state.plants.find(x=>x.id===id&&x.status==='alive');if(!p)return;
+  if(Number(p.level)<4)return toast('依甲方規格，母株需達 Lv.4 才可拆分側芽');
+  document.getElementById('splitParentId').value=id;
+  document.getElementById('splitName').value=p.name+'側芽';
+  document.getElementById('splitNick').value='';
+  document.getElementById('splitPot').value='';
+  document.getElementById('splitSalePrice').value=0;
+  document.getElementById('splitRecipient').value='';
+  document.getElementById('splitNote').value='';
+  document.getElementById('splitFlow').value='keep';
+  populateCampSelect('splitCamp',p.camp);
+  updateSplitFields();
+  document.getElementById('splitModal').classList.add('show');
+}
+function updateSplitFields(){
+  const flow=document.getElementById('splitFlow').value;
+  document.getElementById('splitCampField').style.display=flow==='keep'?'grid':'none';
+  document.getElementById('splitRecipientField').style.display=flow==='gift'?'grid':'none';
+  document.getElementById('splitSaleField').style.display=flow==='sold'?'grid':'none';
+}
+function confirmSplit(){
+  const parent=state.plants.find(p=>p.id===document.getElementById('splitParentId').value);if(!parent)return;
+  const name=document.getElementById('splitName').value.trim();if(!name)return toast('請輸入子株名稱');
+  const flow=document.getElementById('splitFlow').value;
+  const pot=document.getElementById('splitPot').value.trim();
+  const camp=flow==='keep'?document.getElementById('splitCamp').value:'';
+  const recipient=flow==='gift'?document.getElementById('splitRecipient').value.trim():'';
+  const salePrice=flow==='sold'?Number(document.getElementById('splitSalePrice').value||0):0;
+  if(flow==='gift'&&!recipient)return toast('請輸入贈與對象');
+  if(flow==='sold'&&salePrice<=0)return toast('出售金額需大於 0');
+  if(flow==='keep'&&pot){
+    const item=findInvPot(pot);if(!item||item.qty<=0)return toast(`「${pot}」庫存不足`);
+    item.qty-=1;
+  }
+  const child={
+    id:nextPlantId(),type:parent.type,name,variety:parent.variety,nick:document.getElementById('splitNick').value.trim(),
+    level:1,xp:0,bloodline:'分株／側芽',source:'自繁',camp,pot:flow==='keep'?pot:'',harvestable:parent.harvestable,harvestUnit:parent.harvestUnit,parentB:'',
+    price:0,parentId:parent.id,flow,recipient,salePrice,splitDate:todayISO(),
+    note:document.getElementById('splitNote').value.trim(),lastWater:new Date().toISOString(),
+    status:flow==='keep'?'alive':flow,createdAt:Date.now(),history:[]
+  };
+  const flowText=flow==='keep'?`留養於 ${camp}`:flow==='gift'?`贈與 ${recipient}`:`售出 NT$${salePrice}`;
+  logPlant(child,'分株',`由 #${parent.id} ${parent.name} 拆分；${flowText}`);
+  state.plants.push(child);
+  addXP(parent,15,'成功分株');logPlant(parent,'分株',`建立子株 #${child.id} ${child.name}；${flowText}`);
+  if(flow==='sold')state.incomes.unshift({id:'r'+Date.now(),date:todayISO(),category:'側芽出售',name:child.name,amount:salePrice,parentId:parent.id,plantId:child.id});
+  closeModal('splitModal');save();toast(flow==='sold'?'子株已建立並將出售收入轉入金幣庫':'子株已建立並綁定母株');
+}
+function clearPlantSearch(){const el=document.getElementById('plantSearchInput');if(el)el.value='';renderPlants()}
+function renderPlants(){
+  const active=state.plants.filter(p=>p.status==='alive');
+  const camps=['全部',...state.camps];
+  if(currentCamp!=='全部'&&!camps.includes(currentCamp))currentCamp='全部';
+  document.getElementById('campTabs').innerHTML=camps.map(c=>`<button class="${c===currentCamp?'active':''}" onclick="setCamp('${esc(c).replace(/'/g,"\\'")}')">${c==='全部'?'🌍 全部':'📍 '+esc(c)}</button>`).join('');
+  const q=(document.getElementById('plantSearchInput')?.value||'').trim().toLowerCase();
+  const filtered=active.filter(p=>{
+    if(currentCamp!=='全部'&&p.camp!==currentCamp)return false;
+    if(!q)return true;
+    return [p.name,p.type,p.category,p.nick,p.variety,p.camp,p.seller,p.source,p.bloodline,p.note,p.importedSourceText,p.importedResolvedSource,p.importedSourceDisplay,p.importedSourceType,p.importedStatusText,p.importedClassification,p.importedParentText].join(' ').toLowerCase().includes(q);
+  });
+  document.getElementById('plantGrid').innerHTML=filtered.length?filtered.map(plantCard).join(''):`<div class="empty" style="grid-column:1/-1">${q?'找不到符合搜尋條件的植物。':'此營地目前沒有留養植物。'}</div>`;
+}
+function setCamp(c){currentCamp=c;renderPlants()}
+function renderDashboard(){
+  const alive=state.plants.filter(p=>p.status==='alive');
+  const totalExpense=state.expenses.reduce((a,b)=>a+Number(b.amount||0),0);
+  const totalIncome=state.incomes.reduce((a,b)=>a+Number(b.amount||0),0);
+  const lowInv=state.inventory.filter(i=>i.qty<=1).length;
+  const harvestCount=state.harvests.reduce((a,b)=>a+Number(b.qty||0),0);
+  document.getElementById('dashboardStats').innerHTML=[
+    ['留養植物',alive.length,'🪴 現役個體'],
+    ['英靈殿',state.plants.filter(p=>p.status==='dead').length,'⚔️ 歷史履歷'],
+    ['花園淨支出',money(totalExpense-totalIncome),'💰 支出－收入'],
+    ['採收紀錄',state.harvests.length,'🌾 次數']
+  ].map(x=>`<div class="stat"><div class="k">${x[0]}</div><div class="v">${x[1]}</div><div class="s">${x[2]}</div></div>`).join('');
+  document.getElementById('recentPlants').innerHTML=alive.slice(-2).reverse().map(plantCard).join('')||'<div class="empty">尚未建立植物</div>';
+  const alerts=[];
+  alive.filter(p=>p.lastWater&&(new Date()-new Date(p.lastWater))/86400000>=4).forEach(p=>alerts.push(`💧 ${p.name} 已 ${daysAgo(p.lastWater)} 未澆水`));
+  if(lowInv)alerts.push(`🎒 有 ${lowInv} 項資材庫存剩 1 或更少`);
+  state.compost.forEach(c=>{
+    const a=compostCalc(c),m=compostMaturityAssessment(c);
+    if(c.status!=='completed'&&m.ready)alerts.push(`✅ ${c.name} 熟成檢查 ${m.readyCount}/${m.totalChecks}，可進一步確認是否完成`);
+    else if(c.status!=='completed'&&a.remaining<=7)alerts.push(`♻️ ${c.name} 預估 ${a.remaining} 天內進入熟成檢查期`);
+  });
+  document.getElementById('alerts').innerHTML=alerts.length?alerts.map(a=>`<div class="row"><div class="row-main"><strong>${esc(a)}</strong></div></div>`).join(''):'<div class="empty">目前沒有需要特別注意的項目。</div>';
+  const linkEl=document.getElementById('integrationLogList');
+  if(linkEl)linkEl.innerHTML=state.integrationLogs.length?state.integrationLogs.slice(0,8).map(l=>`<div class="link-log"><strong>⚙️ ${esc(l.type)}</strong><div>${esc(l.text)}</div><small>${new Date(l.date).toLocaleString('zh-TW')}</small></div>`).join(''):'<div class="empty">尚無自動連動紀錄。</div>';
+}
+function suitabilityBroadGroup(category){
+  const c=String(category||'其他');
+  if(c==='蕨類')return '蕨類';
+  if(['蔬菜','果樹／水果','香草'].includes(c))return '蔬果／香草';
+  if(c==='觀葉植物')return '觀葉植物';
+  if(c==='多肉／仙人掌')return '多肉／仙人掌';
+  if(['花卉','蘭科'].includes(c))return '花卉／蘭科';
+  if(c==='水生植物')return '水生植物';
+  if(['草本／地被','木本植物'].includes(c))return '草本／木本';
+  if(/食蟲/.test(c))return '食蟲植物';
+  return '其他';
+}
+function suitabilityGroupIcon(group){
+  const icons={'蕨類':'🌿','蔬果／香草':'🥬','觀葉植物':'🪴','多肉／仙人掌':'🌵','花卉／蘭科':'🌸','水生植物':'🪷','草本／木本':'🌳','食蟲植物':'🪰','其他':'🌱'};
+  return icons[group]||'🌱';
+}
+function suitabilityJudgement(alive,dead){
+  const n=alive+dead,rate=n?alive/n:0;
+  if(n<3)return {label:'樣本不足',cls:'',desc:'至少累積 3 株再進行適養判斷。'};
+  if(rate>=.70)return {label:'✅ 較適合目前養法',cls:'ratio-good',desc:'目前存活表現較穩定，可延續現有環境與照護方式。'};
+  if(rate<=.40)return {label:'⚠️ 較不適合目前養法',cls:'damage',desc:'死亡比例偏高，建議檢查環境、澆水、介質、光照或來源品質。'};
+  return {label:'👀 持續觀察',cls:'ratio-dry',desc:'目前表現介於中間，建議累積更多樣本再判斷。'};
+}
+function buildSuitabilityGroups(){
+  const groups={};
+  state.plants.forEach(p=>{
+    const group=suitabilityBroadGroup(p.category);
+    groups[group]??={alive:0,dead:0,spent:0,types:new Set(),plants:[]};
+    const g=groups[group];
+    if(p.status==='alive')g.alive++;
+    else if(p.status==='dead')g.dead++;
+    g.types.add(p.type||'未分類');
+    g.plants.push(p);
+    g.spent+=Number(p.price||0);
+  });
+  return groups;
+}
+function openSuitabilityDetail(encodedGroup){
+  const group=decodeURIComponent(encodedGroup);
+  const groups=buildSuitabilityGroups(),g=groups[group];if(!g)return;
+  const n=g.alive+g.dead,rate=n?Math.round(g.alive/n*100):0,avg=g.alive>0?g.spent/g.alive:Infinity;
+  const judge=suitabilityJudgement(g.alive,g.dead);
+
+  document.getElementById('suitabilityDetailTitle').textContent=`${suitabilityGroupIcon(group)} ${group}｜適養分析詳情`;
+  document.getElementById('suitabilityDetailSummary').innerHTML=[
+    ['存活率',rate+'%'],
+    ['現役／死亡',`${g.alive} / ${g.dead}`],
+    ['累計購入',money(g.spent)],
+    ['每現役株成本',Number.isFinite(avg)?money(avg):'無現役株']
+  ].map(x=>`<div class="stat"><div class="k">${x[0]}</div><div class="v">${x[1]}</div></div>`).join('');
+
+  const byType={};
+  g.plants.forEach(p=>{
+    const t=p.type||'未分類';
+    byType[t]??={alive:0,dead:0,spent:0,categories:new Set()};
+    if(p.status==='alive')byType[t].alive++;else if(p.status==='dead')byType[t].dead++;
+    byType[t].spent+=Number(p.price||0);
+    byType[t].categories.add(p.category||'未分類');
+  });
+  document.getElementById('suitabilityTypeDetail').innerHTML=Object.entries(byType)
+    .sort((a,b)=>(b[1].alive+b[1].dead)-(a[1].alive+a[1].dead))
+    .map(([type,s])=>{
+      const total=s.alive+s.dead,r=total?Math.round(s.alive/total*100):0,j=suitabilityJudgement(s.alive,s.dead);
+      return `<div class="row">
+        <div class="row-main">
+          <strong>🌿 ${esc(type)}</strong>
+          <small>細分類：${[...s.categories].map(esc).join('、')}・現役 ${s.alive}・死亡 ${s.dead}・存活率 ${r}%・購入 ${money(s.spent)}</small>
+        </div>
+        <span class="tag ${j.cls}">${j.label}</span>
+      </div>`;
+    }).join('')||'<div class="empty">沒有種類資料。</div>';
+
+  const rows=[...g.plants].sort((a,b)=>{
+    if(a.status!==b.status)return a.status==='dead'?1:-1;
+    return String(a.type||'').localeCompare(String(b.type||''),'zh-Hant');
+  });
+  document.getElementById('suitabilityPlantDetail').innerHTML=rows.map(p=>{
+    const status=p.status==='alive'?'🌱 現役':p.status==='dead'?'🪦 死亡':p.status==='sold'?'💰 已售出':p.status==='gift'?'🎁 已贈與':esc(p.status||'其他');
+    return `<tr>
+      <td><strong>#${esc(p.id)} ${esc(p.name)}</strong>${p.nick?`<small style="display:block">${esc(p.nick)}</small>`:''}</td>
+      <td>${esc(p.type||'未分類')}<small style="display:block">${esc(p.category||'未分類')}</small></td>
+      <td>${status}</td>
+      <td>${money(Number(p.price||0))}</td>
+      <td>${p.status==='alive'?esc(p.camp||'未設定'):'—'}</td>
+      <td>${p.status==='dead'?esc(p.deathCause||'未紀錄'):'—'}</td>
+    </tr>`;
+  }).join('')||'<tr><td colspan="6">沒有個體資料。</td></tr>';
+
+  const note=document.createElement('div');
+  note.className='ratio-guide';
+  note.style.marginTop='10px';
+  note.textContent=judge.desc;
+  const modal=document.getElementById('suitabilityDetailModal');
+  const old=modal.querySelector('.suitability-judge-note');if(old)old.remove();
+  note.classList.add('suitability-judge-note');
+  modal.querySelector('.modal-box').appendChild(note);
+  modal.classList.add('show');
+}
+function renderLineage(){
+  const roots=state.plants.filter(p=>!p.parentId||!state.plants.some(x=>x.id===p.parentId));
+
+  function generationInfo(depth){
+    if(depth===0)return {label:'母株',icon:'👑',cls:'gen-0'};
+    if(depth===1)return {label:'子株',icon:'🌱',cls:'gen-1'};
+    if(depth===2)return {label:'孫株',icon:'🌿',cls:'gen-2'};
+    return {label:`第 ${depth+1} 代`,icon:'🍃',cls:'gen-more'};
+  }
+
+  function node(p,depth=0){
+    const kids=state.plants.filter(x=>x.parentId===p.id);
+    const fl=flowLabel(p);
+    const gen=generationInfo(depth);
+    const location=p.status==='alive'
+      ? (p.camp||'未設定營地')
+      : (p.status==='sold'?'已售出':p.status==='gift'?`贈與 ${p.recipient||'未紀錄'}`:'英靈殿');
+
+    const extra=p.status==='sold'&&p.salePrice
+      ? `・收益 ${money(p.salePrice)}`
+      : p.status==='dead'&&p.deathCause
+        ? `・死因 ${esc(p.deathCause)}`
+        : '';
+
+    return `<div class="tree-node">
+      <div>
+        <span class="generation-badge ${gen.cls}">${gen.icon} ${gen.label}</span>
+        <strong>#${esc(p.id)} ${esc(p.name)}${p.nick?`・${esc(p.nick)}`:''}</strong>
+        <span class="tag">Lv.${p.level}</span>
+        <span class="tag ${fl[1]}">${fl[0]}</span>
+      </div>
+      <div class="note">🧬 ${esc(p.bloodline)}・📍 ${esc(location)}${p.splitDate?`・拆分 ${esc(p.splitDate)}`:''}${extra}</div>
+      ${kids.length?`<div class="tree-children">${kids.map(k=>node(k,depth+1)).join('')}</div>`:''}
+    </div>`;
+  }
+
+  document.getElementById('lineageTree').innerHTML=roots.length
+    ? roots.map(r=>node(r,0)).join('')
+    : '<div class="empty">尚無血統資料。</div>';
+
+  const dead=state.plants.filter(p=>p.status==='dead');
+  document.getElementById('valhallaList').innerHTML=dead.length?dead.map(p=>{
+    const lived=Math.max(0,Math.floor((new Date(p.archivedAt)-new Date(p.createdAt))/86400000));
+    return `<div class="row"><div class="row-main"><strong>🪦 #${esc(p.id)} ${esc(p.name)}</strong><small>死亡原因：${esc(p.deathCause||'未紀錄')}・存活約 ${lived} 天・${p.archivedAt?new Date(p.archivedAt).toLocaleDateString('zh-TW'):''}</small></div><span class="tag">${p.potReturned?'盆器已自動返庫':'歷史保留'}</span></div>`;
+  }).join(''):'<div class="empty">目前沒有歸檔植物。</div>';
+
+  const groups=buildSuitabilityGroups();
+  const sEl=document.getElementById('suitabilityList');
+  if(sEl){
+    const entries=Object.entries(groups).sort((a,b)=>{
+      const an=a[1].alive+a[1].dead,bn=b[1].alive+b[1].dead;
+      return bn-an || b[1].spent-a[1].spent;
+    });
+    sEl.innerHTML=entries.length?entries.map(([group,s])=>{
+      const n=s.alive+s.dead,rate=n?Math.round(s.alive/n*100):0;
+      const judgement=suitabilityJudgement(s.alive,s.dead);
+      const avg=s.alive>0?s.spent/s.alive:Infinity;
+      return `<div class="analytics-card suitability-card">
+        <strong>${suitabilityGroupIcon(group)} ${esc(group)}</strong>
+        <div class="big-rate">${rate}%</div>
+        <div class="note">目前存活率</div>
+        <div class="mini-stats">
+          <span>🌱 現役 ${s.alive}</span>
+          <span>🪦 死亡 ${s.dead}</span>
+          <span>🧬 ${s.types.size} 種</span>
+        </div>
+        <div class="note">累計購入 ${money(s.spent)}・每現役株 ${Number.isFinite(avg)?money(avg):'無現役株'}</div>
+        <span class="tag ${judgement.cls}">${judgement.label}</span>
+        <button class="btn" onclick="openSuitabilityDetail('${encodeURIComponent(group)}')">查看詳情 →</button>
+      </div>`;
+    }).join(''):'<div class="empty">尚無資料。</div>';
+  }
+}
+function clearAIText(){
+  if(window.voiceActive && window.voiceRecognition){
+    window.voiceActive=false;
+    try{window.voiceRecognition.stop()}catch(e){}
+  }
+  document.getElementById('aiText').value='';
+  const s=document.getElementById('voiceStatus');
+  if(s)s.textContent='內容已清空。';
+  const b=document.getElementById('voiceBtn');
+  if(b)b.textContent='🎙️ 開始語音';
+}
+function useAIExample(text){
+  document.getElementById('aiText').value=text;
+  parseAI();
+}
+function aiFindPlant(text){
+  const id=(text.match(/(?:#|第)?\s*(\d+)\s*號/)||[])[1];
+  if(id)return state.plants.find(p=>p.id===id&&p.status==='alive')||null;
+  return state.plants.find(p=>p.status==='alive' && (
+    (p.name && text.includes(p.name)) || (p.nick && text.includes(p.nick))
+  )) || null;
+}
+function aiExtractCamp(text){
+  const aliases={'住家':'住家陽台','公司':'公司辦公桌','溫室':'私人溫室'};
+  const dynamic=[...state.camps].sort((a,b)=>b.length-a.length);
+  const hit=dynamic.find(x=>text.includes(x));
+  if(hit)return hit;
+  const alias=Object.keys(aliases).find(x=>text.includes(x));
+  if(alias)return aliases[alias];
+  const m=text.match(/(?:搬到|移到|放在|放到|移至|搬去)\s*([^，,。；;]+?)(?=(?:並|再|用|換|價格|售價|等級|Lv|$))/);
+  return m?m[1].trim():'';
+}
+function aiExtractPot(text){
+  const m=text.match(/(\d+(?:\.\d+)?\s*吋\s*(?:盆|花盆)?)/);
+  if(!m)return '';
+  return m[1].replace(/\s+/g,'').replace(/吋$/,'吋盆');
+}
+function aiExtractCategory(text){
+  if(text.includes('肥料'))return '肥料';
+  if(text.includes('盆'))return '盆器';
+  if(text.includes('土')||text.includes('介質'))return '培養土／介質';
+  if(text.includes('工具'))return '園藝工具';
+  if(text.includes('病蟲')||text.includes('藥'))return '病蟲害用品';
+  if(text.includes('堆肥'))return '堆肥用品';
+  if(text.includes('植物'))return '植物';
+  return '其他';
+}
+function aiShowPreview(intent, rows, warning=''){
+  document.getElementById('aiIntentTag').textContent=intent;
+  document.getElementById('aiFields').innerHTML=rows.map(r=>`<dt>${esc(r[0])}</dt><dd>${esc(r[1])}</dd>`).join('');
+  const w=document.getElementById('aiWarning');
+  w.textContent=warning||'';
+  w.classList.toggle('show',!!warning);
+  document.getElementById('aiPreview').classList.add('show');
+  document.getElementById('aiConfirmBtn').disabled=!!(pendingAI&&pendingAI.invalid);
+}
+function parseAI(){
+  const text=document.getElementById('aiText').value.trim();
+  if(!text)return toast('請先輸入指令');
+  pendingAI=null;
+
+  // 1. 新增植物
+  if(/新增.*植物|新增一?株|建立.*植物/.test(text)){
+    let name='';
+    const m=text.match(/(?:新增(?:一?株)?(?:植物)?|建立(?:一?株)?(?:植物)?)\s*([^，,。]+?)(?=(?:，|,|放在|放到|移到|用|換|暱稱|價格|等級|親本|$))/);
+    if(m)name=m[1].trim().replace(/^一株/,'').trim();
+
+    const nick=((text.match(/暱稱\s*([^，,。]+?)(?=(?:，|,|放|用|價格|等級|親本|種類|類別|來源|$))/)||[])[1]||'').trim();
+    const type=((text.match(/種類\s*([^，,。]+?)(?=(?:，|,|類別|來源|放|用|價格|等級|親本|$))/)||[])[1]||name).trim();
+    const explicitCategory=((text.match(/類別\s*([^，,。]+?)(?=(?:，|,|來源|放|用|價格|等級|親本|$))/)||[])[1]||'').trim();
+    const guessed=guessPlantCategory(name,type).category;
+    const category=explicitCategory||guessed;
+    const source=((text.match(/來源\s*([^，,。]+?)(?=(?:，|,|放|用|價格|等級|親本|$))/)||[])[1]||'未分類').trim();
+    const camp=aiExtractCamp(text)||'住家陽台';
+    const pot=aiExtractPot(text);
+    const price=Number((text.match(/(?:價格|購入價格|售價)\s*(\d+(?:\.\d+)?)/)||[])[1]||0);
+    const level=Math.min(4,Math.max(1,Number((text.match(/(?:等級|Lv\.?)\s*(\d)/i)||[])[1]||1)));
+    const parent=(text.match(/親本\s*(?:#|第)?\s*(\d+)\s*號?/)||[])[1]||'';
+    const invalid=!name || (parent && !state.plants.some(p=>p.id===parent&&p.status==='alive'));
+
+    pendingAI={type:'addPlant',text,name,plantType:type,category,source,nick,camp,pot,price,level,parentId:parent,invalid};
+    const warning=!name?'沒有辨識到植物名稱。':(parent&&!state.plants.some(p=>p.id===parent&&p.status==='alive')?'找不到指定親本。':'');
+    aiShowPreview('＋ 新增植物',[
+      ['植物名稱',name||'未辨識'],
+      ['植物種類',type||'未辨識'],
+      ['植物類別',category||'未辨識'],
+      ['來源',source],
+      ['暱稱',nick||'未設定'],
+      ['營地',camp],
+      ['盆器',pot||'未設定'],
+      ['等級','Lv.'+level],
+      ['親本',parent?`#${parent}`:'無'],
+      ['購入價格',price?money(price):'未設定']
+    ],warning);
+    return;
+  }
+
+  // 2. 新增／補充庫存
+  if(/(?:新增|補充|補貨|增加).*(?:庫存|盆|肥料|培養土|工具)/.test(text) && !/植物/.test(text)){
+    /*
+      數量解析優先順序：
+      1. 「庫存 3 個」→ 3
+      2. 「數量 3」→ 3
+      3. 句尾「3 個」→ 3
+      刻意不再從「新增」後第一個數字抓取，
+      避免把「新增 4 吋盆庫存 3 個」的 4 誤判成數量。
+    */
+    const qtyMatch =
+      text.match(/庫存\s*(?:增加|新增|補充)?\s*(\d+(?:\.\d+)?)\s*(?:個|包|瓶|把|件)?/) ||
+      text.match(/數量\s*(\d+(?:\.\d+)?)/) ||
+      text.match(/(\d+(?:\.\d+)?)\s*(?:個|包|瓶|把|件)\s*(?=(?:，|,|。|；|;|單價|價格|總價|$))/);
+    const qty=Number(qtyMatch?.[1]||1);
+
+    let name='';
+    const pm=text.match(/(\d+(?:\.\d+)?\s*吋\s*(?:盆|花盆))/);
+    if(pm)name=pm[1].replace(/\s+/g,'');
+    if(!name){
+      const nm=text.match(/(?:新增|補充|補貨|增加)\s*([^，,。]+?)(?=(?:庫存|數量|\d+\s*(?:個|包|瓶|把|件)|單價|價格|總價|$))/);
+      if(nm)name=nm[1].trim();
+    }
+
+    const explicitType=((text.match(/分類\s*([^，,。]+?)(?=(?:，|,|單價|價格|總價|數量|$))/)||[])[1]||'').trim();
+    const type=explicitType||(name.includes('盆')?'盆器':name.includes('肥')?'肥料':name.includes('土')?'培養土':name.includes('工具')?'工具':'其他');
+
+    const unitPrice=Number(
+      (text.match(/(?:單價|每個|每包|每瓶|每件)\s*(?:是|為)?\s*(\d+(?:\.\d+)?)\s*元?/)||[])[1] || 0
+    );
+    const totalPrice=Number(
+      (text.match(/(?:總價|總共|合計)\s*(?:是|為)?\s*(\d+(?:\.\d+)?)\s*元?/)||[])[1] || 0
+    );
+    const resolvedUnitPrice=unitPrice>0 ? unitPrice : (totalPrice>0 && qty>0 ? totalPrice/qty : 0);
+
+    pendingAI={
+      type:'inventory',text,name,qty,typeInv:type,
+      unit:name.includes('土')?'包':'個',
+      unitPrice:resolvedUnitPrice,
+      totalCost:resolvedUnitPrice*qty,
+      invalid:!name||qty<=0
+    };
+
+    aiShowPreview('🎒 新增庫存',[
+      ['資材名稱',name||'未辨識'],
+      ['分類',type],
+      ['增加數量',String(qty)],
+      ['單價',resolvedUnitPrice>0?money(resolvedUnitPrice):'未設定'],
+      ['同步帳本',resolvedUnitPrice>0?money(resolvedUnitPrice*qty):'不產生支出'],
+      ['確認後','同名資材存在則直接累加庫存']
+    ],pendingAI.invalid?'未完整辨識資材名稱或數量。':'');
+    return;
+  }
+
+  // 3. 記錄支出
+  if(/(?:記|新增|紀錄|記錄).*(?:支出|花費)|支出\s*\d+/.test(text)){
+    const amount=Number((text.match(/(\d+(?:\.\d+)?)\s*元/)||[])[1]||0);
+    const explicitName=((text.match(/名稱\s*([^，,。]+)$/)||[])[1]||'').trim();
+    const customCategory=((text.match(/分類\s*([^，,。]+?)(?=(?:，|,|名稱|\d+\s*元|$))/)||[])[1]||'').trim();
+    const category=customCategory||aiExtractCategory(text);
+    const name=explicitName||category+'支出';
+    pendingAI={type:'expense',text,name,amount,category,date:todayISO(),invalid:amount<=0};
+    aiShowPreview('💰 記錄支出',[
+      ['日期',todayISO()],
+      ['分類',category],
+      ['名稱',name],
+      ['金額',amount>0?money(amount):'未辨識']
+    ],amount<=0?'沒有辨識到有效金額。':'');
+    return;
+  }
+
+  // 4. 建立堆肥箱
+  if(/(?:新增|建立).*(?:堆肥箱|堆肥)/.test(text)){
+    const name=((text.match(/(?:堆肥箱|堆肥)\s*([^，,。]+?)(?=(?:，|,|C\/N|CN|溫度|春|夏|秋|冬|\d+\s*天|$))/)||[])[1]||'新堆肥箱').trim();
+    const cn=Number((text.match(/C\/?N\s*(?:比)?\s*(\d+(?:\.\d+)?)/i)||[])[1]||30);
+    const temp=Number((text.match(/溫度\s*(\d+(?:\.\d+)?)\s*度?/)||[])[1]||26);
+    const season=(text.match(/(春|夏|秋|冬)(?:季|天)?/)||[])[1]||'春';
+    const days=Number((text.match(/(\d+)\s*天/)||[])[1]||60);
+    const price=Number((text.match(/(?:成本|價格|建置費|材料費)\s*(?:是|為)?\s*(\d+(?:\.\d+)?)\s*元?/)||[])[1]||0);
+    pendingAI={type:'compost',text,name,cn,temp,season,days,price,start:todayISO(),invalid:false};
+    const calc=compostCalc({baseDays:days,temp,season,start:todayISO()});
+    aiShowPreview('♻️ 建立堆肥箱',[
+      ['名稱',name],
+      ['C/N 比',String(cn)],
+      ['氣溫',temp+'°C'],
+      ['季節',season+'季'],
+      ['基礎天數',days+' 天'],
+      ['建置成本',price>0?money(price):'未設定'],
+      ['同步帳本',price>0?'建立後自動新增堆肥用品支出':'不產生支出'],
+      ['氣候調整後',calc.total+' 天・'+calc.label]
+    ]);
+    return;
+  }
+
+  const plant=aiFindPlant(text);
+
+  // 5. 澆水
+  if(/澆水|補水/.test(text)){
+    pendingAI={type:'water',text,plant,invalid:!plant};
+    aiShowPreview('💧 更新澆水',[
+      ['目標植物',plant?`#${plant.id} ${plant.name}`:'未辨識'],
+      ['更新內容','上次澆水時間 → 現在']
+    ],plant?'':'找不到目標植物，請使用「3號」或植物名稱。');
+    return;
+  }
+
+  // 6. 採收
+  if(/採收|收成/.test(text)){
+    const qty=Number((text.match(/(?:採收|收成)\s*(\d+(?:\.\d+)?)\s*(?:份|個|顆|株)?/)||[])[1]||1);
+    pendingAI={type:'harvest',text,plant,qty,invalid:!plant||qty<=0};
+    aiShowPreview('🌾 新增採收紀錄',[
+      ['目標植物',plant?`#${plant.id} ${plant.name}`:'未辨識'],
+      ['採收數量',String(qty)],
+      ['日期',todayISO()]
+    ],pendingAI.invalid?'找不到植物或採收數量無效。':'');
+    return;
+  }
+
+  // 7. 英靈殿
+  if(/英靈殿|歸檔|死亡|死掉/.test(text)){
+    pendingAI={type:'archive',text,plant,returnPot:true,invalid:!plant};
+    aiShowPreview('⚔️ 歸檔至英靈殿',[
+      ['目標植物',plant?`#${plant.id} ${plant.name}`:'未辨識'],
+      ['目前盆器',plant?.pot||'無'],
+      ['歸檔後','保留歷史履歷'],
+      ['盆器處理',plant?.pot?'預設返還庫存 +1':'無盆器可返還']
+    ],plant?'':'找不到目標植物。');
+    return;
+  }
+
+  // 8. 移動／換盆，可同時做
+  if(/搬到|移到|移至|搬去|換.*盆|換盆/.test(text)){
+    const camp=aiExtractCamp(text);
+    const pot=aiExtractPot(text);
+    const inv=pot?findInvPot(pot):null;
+    const noChange=plant && !camp && !pot;
+    const invalid=!plant || noChange || (pot && (!inv || inv.qty<=0));
+    let warning='';
+    if(!plant)warning='找不到目標植物。';
+    else if(noChange)warning='沒有辨識到要移動的營地或新盆器。';
+    else if(pot && (!inv||inv.qty<=0))warning=`「${pot}」目前庫存不足，確認按鈕已停用。`;
+
+    pendingAI={type:'plantUpdate',text,plant,camp,pot,invalid};
+    aiShowPreview('🪴 修改植物',[
+      ['目標植物',plant?`#${plant.id} ${plant.name}`:'未辨識'],
+      ['移動營地',camp||'不變更'],
+      ['更換盆器',pot||'不變更'],
+      ['盆器庫存',pot?(inv?`${inv.qty} → ${inv.qty-1}`:'找不到此資材'):'不影響']
+    ],warning);
+    return;
+  }
+
+  pendingAI={type:'unknown',text,invalid:true};
+  aiShowPreview('❓ 無法辨識',[
+    ['原始指令',text],
+    ['建議','請使用頁面上的範例格式描述操作']
+  ],'目前沒有辨識到可執行的操作。');
+}
+function cancelAI(){
+  pendingAI=null;
+  document.getElementById('aiPreview').classList.remove('show');
+  document.getElementById('aiConfirmBtn').disabled=false;
+  toast('已取消，資料未變更');
+}
+function confirmAI(){
+  if(!pendingAI || pendingAI.invalid)return toast('目前解析結果不能執行，請修改指令');
+  const a=pendingAI;
+
+  if(a.type==='addPlant'){
+    if(a.camp && !state.camps.includes(a.camp))state.camps.push(a.camp);
+    rememberPlantClassification(a.plantType||a.name,a.category||'其他');
+    const meta=state.plantTypeMeta[a.plantType||a.name]||{harvestable:plantCategoryHarvestDefault(a.category),harvestUnit:a.category==='香草'?'g':'個'};
+    const p={
+      id:nextPlantId(),type:a.plantType||a.name,category:a.category||guessPlantCategory(a.name,a.plantType||a.name).category,
+      name:a.name,variety:'',nick:a.nick,level:a.level,xp:0,
+      bloodline:a.parentId?'分株／側芽':'來源不明',source:a.parentId?'自繁':(a.source||'未分類'),camp:a.camp,
+      pot:a.pot,price:a.price,parentId:a.parentId,parentB:'',harvestable:!!meta.harvestable,harvestUnit:meta.harvestUnit||'個',flow:'keep',note:'由 AI 助手建立',
+      lastWater:null,status:'alive',createdAt:Date.now(),history:[],careLogs:[]
+    };
+    logPlant(p,'AI 建立',`透過 AI 助手建立，駐紮「${a.camp}」`);
+    state.plants.push(p);
+    if(a.price>0)state.expenses.unshift({id:'e'+Date.now(),date:todayISO(),category:'植物',name:p.name+'（購入）',amount:a.price});
+  }
+  else if(a.type==='inventory'){
+    const hit=state.inventory.find(i=>i.name===a.name&&i.type===a.typeInv);
+    if(hit){
+      hit.qty+=a.qty;
+      if(a.unitPrice>0)hit.unitPrice=a.unitPrice;
+    }else{
+      state.inventory.push({id:'i'+Date.now(),name:a.name,type:a.typeInv,qty:a.qty,unit:a.unit,unitPrice:a.unitPrice||0});
+    }
+    if(a.unitPrice>0){
+      state.expenses.unshift({
+        id:'e'+Date.now(),
+        date:todayISO(),
+        category:inventoryExpenseCategory(a.typeInv),
+        name:`${a.name} × ${a.qty}${a.unit}（AI 庫存購入）`,
+        amount:a.unitPrice*a.qty,
+        source:'inventory-ai'
+      });
+    }
+  }
+  else if(a.type==='expense'){
+    state.expenses.unshift({id:'e'+Date.now(),date:a.date,category:a.category,name:a.name,amount:a.amount});
+  }
+  else if(a.type==='compost'){
+    const compostId='c'+Date.now();
+    state.compost.push({id:compostId,name:a.name,cn:a.cn,mixMode:'parts',carbonRatio:80,nitrogenRatio:17,carbonParts:2,nitrogenParts:1,carbonWeight:0,nitrogenWeight:0,weightUnit:'kg',dryParts:2,wetParts:1,temp:a.temp,season:a.season,baseDays:a.days,start:a.start,price:a.price||0,dailyLogs:[]});
+    if(a.price>0){
+      state.expenses.unshift({
+        id:'e'+Date.now()+'c',
+        date:todayISO(),
+        category:'堆肥用品',
+        name:`${a.name}（AI 建置／材料成本）`,
+        amount:a.price,
+        source:'compost-ai',
+        compostId
+      });
+    }
+  }
+  else if(a.type==='water'){
+    a.plant.lastWater=new Date().toISOString();
+    addCareLog(a.plant,'澆水','由 AI 助手完成澆水');
+    addXP(a.plant,1,'澆水');
+  }
+  else if(a.type==='harvest'){
+    state.harvests.unshift({id:'h'+Date.now(),plantId:a.plant.id,qty:a.qty,date:todayISO()});
+  }
+  else if(a.type==='archive'){
+    a.plant.status='dead';a.plant.flow='dead';
+    a.plant.deathCause=((a.text.match(/(?:原因|因為)\s*([^，,。]+)/)||[])[1]||'AI 指令歸檔').trim();
+    a.plant.archivedAt=new Date().toISOString();
+    if(a.returnPot && a.plant.pot){
+      let item=findInvPot(a.plant.pot);
+      if(item)item.qty+=1;
+      else state.inventory.push({id:'i'+Date.now(),name:a.plant.pot,type:'盆器',qty:1,unit:'個'});
+      a.plant.potReturned=true;
+    }
+  }
+  else if(a.type==='plantUpdate'){
+    if(a.camp){
+      if(!state.camps.includes(a.camp))state.camps.push(a.camp);
+      const oldCamp=a.plant.camp;a.plant.camp=a.camp;logPlant(a.plant,'AI 移防',`${oldCamp||'未設定'} → ${a.camp}`);addIntegrationLog('AI 移防',`${a.plant.name}：${oldCamp||'未設定'} → ${a.camp}`);
+    }
+    if(a.pot && a.pot!==a.plant.pot){
+      const item=findInvPot(a.pot);
+      if(!item||item.qty<=0)return toast(`「${a.pot}」庫存不足，未寫入`);
+      const oldPot=a.plant.pot||'未設定';
+      item.qty-=1;
+      a.plant.pot=a.pot;
+      logPlant(a.plant,'AI 換盆',`${oldPot} → ${a.pot}；庫存 -1`);
+    }
+  }
+
+  save();
+  document.getElementById('aiPreview').classList.remove('show');
+  document.getElementById('aiText').value='';
+  document.getElementById('aiConfirmBtn').disabled=false;
+  pendingAI=null;
+  toast('AI 指令已確認並完成');
+}
+window.voiceRecognition=null;
+window.voiceActive=false;
+window.voiceShouldRestart=false;
+window.voiceBaseText='';
+window.voiceSessionFinal='';
+
+function startVoice(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR)return toast('此瀏覽器不支援語音辨識，建議使用 Chrome / Edge');
+
+  const textBox=document.getElementById('aiText');
+  const btn=document.getElementById('voiceBtn');
+  const status=document.getElementById('voiceStatus');
+
+  // If already listening, this press acts as "stop".
+  if(window.voiceActive && window.voiceRecognition){
+    window.voiceActive=false;
+    window.voiceShouldRestart=false;
+    try{window.voiceRecognition.stop()}catch(e){}
+    btn.textContent='🎙️ 開始語音';
+    if(status)status.textContent='語音已暫停。之後再次按「開始語音」會接續目前文字。';
+    return;
+  }
+
+  // Preserve all existing text. New speech will be appended after it.
+  window.voiceBaseText=textBox.value.trim();
+  window.voiceSessionFinal='';
+  window.voiceActive=true;
+  window.voiceShouldRestart=true;
+
+  const createRecognition=()=>{
+    const r=new SR();
+    window.voiceRecognition=r;
+    r.lang='zh-TW';
+    r.continuous=true;
+    r.interimResults=true;
+    r.maxAlternatives=1;
+
+    r.onstart=()=>{
+      btn.textContent='⏹️ 停止語音';
+      if(status)status.textContent='正在聆聽中… 可以持續講較長內容；即使中途停頓，系統也會盡量自動續聽。';
+    };
+
+    r.onresult=e=>{
+      let interim='';
+      for(let i=e.resultIndex;i<e.results.length;i++){
+        const t=e.results[i][0].transcript;
+        if(e.results[i].isFinal){
+          window.voiceSessionFinal += (window.voiceSessionFinal ? ' ' : '') + t.trim();
+        }else{
+          interim += (interim ? ' ' : '') + t.trim();
+        }
+      }
+
+      const pieces=[];
+      if(window.voiceBaseText)pieces.push(window.voiceBaseText);
+      if(window.voiceSessionFinal)pieces.push(window.voiceSessionFinal);
+      if(interim)pieces.push(interim);
+
+      textBox.value=pieces.join(' ');
+      textBox.scrollTop=textBox.scrollHeight;
+    };
+
+    r.onerror=e=>{
+      // "no-speech" and "aborted" are common during pauses/stop; don't erase content.
+      if(e.error==='not-allowed' || e.error==='service-not-allowed'){
+        window.voiceActive=false;
+        window.voiceShouldRestart=false;
+        btn.textContent='🎙️ 開始語音';
+        if(status)status.textContent='麥克風權限未開啟，請允許瀏覽器使用麥克風。';
+        toast('請允許麥克風權限');
+        return;
+      }
+      if(e.error!=='no-speech' && e.error!=='aborted'){
+        if(status)status.textContent='語音辨識暫時中斷，但已輸入的內容會保留。可再次按語音繼續。';
+      }
+    };
+
+    r.onend=()=>{
+      // Commit the last recognised content as the new base.
+      const current=textBox.value.trim();
+      if(current)window.voiceBaseText=current;
+      window.voiceSessionFinal='';
+
+      // Browser speech recognition often stops after silence.
+      // While user has not pressed Stop, automatically restart and keep appending.
+      if(window.voiceActive && window.voiceShouldRestart){
+        if(status)status.textContent='偵測到停頓，正在自動續接語音…';
+        setTimeout(()=>{
+          if(!window.voiceActive || !window.voiceShouldRestart)return;
+          try{
+            const nr=createRecognition();
+            nr.start();
+          }catch(e){
+            window.voiceActive=false;
+            window.voiceShouldRestart=false;
+            btn.textContent='🎙️ 開始語音';
+            if(status)status.textContent='語音已暫停。可再次按「開始語音」接著輸入。';
+          }
+        },350);
+      }else{
+        btn.textContent='🎙️ 開始語音';
+        if(status)status.textContent='語音已停止。再次按下「開始語音」會接在目前內容後方。';
+      }
+    };
+    return r;
+  };
+
+  try{
+    const r=createRecognition();
+    r.start();
+  }catch(e){
+    window.voiceActive=false;
+    window.voiceShouldRestart=false;
+    btn.textContent='🎙️ 開始語音';
+    if(status)status.textContent='語音啟動失敗，請再按一次嘗試。';
+    toast('語音啟動失敗，請再試一次');
+  }
+}
+function estimateCN(carbonRatio,carbonParts,nitrogenRatio,nitrogenParts){
+  const mats=[[Number(carbonRatio),Number(carbonParts)],[Number(nitrogenRatio),Number(nitrogenParts)]];
+  let C=0,N=0;mats.forEach(([r,w])=>{if(r>0&&w>0){C+=w*r/(r+1);N+=w/(r+1)}});return N>0?C/N:0;
+}
+function cnAnalysis(cn){
+  cn=Number(cn);if(!cn)return {label:'資料不足',cls:'',advice:'請設定碳材、氮材與份數。'};
+  if(cn<20)return {label:'⚠️ 初始氮偏高',cls:'ratio-wet',advice:'若這是剛開始的配料，C/N 偏低，較容易有氨味或氮損失；可增加碳材。'};
+  if(cn<25)return {label:'🟡 初始稍偏氮',cls:'ratio-wet',advice:'作為初始配方可再補一些碳材，使比例更接近 25–30:1。'};
+  if(cn<=30)return {label:'✅ 初始配方理想',cls:'ratio-good',advice:'初始 C/N 約 25–30:1，適合作為堆肥開始配料的參考。'};
+  if(cn<=40)return {label:'🟡 初始可用',cls:'ratio-dry',advice:'仍可堆肥，但碳較多時分解可能較慢。'};
+  return {label:'🍂 初始碳偏高',cls:'ratio-dry',advice:'碳材過多時分解較慢，可增加綠色氮材。'};
+}
+function toggleCompostAmountMode(){
+  const mode=document.getElementById('compostAmountMode')?.value||'parts';
+  const parts=mode==='parts';
+  document.getElementById('compostCarbonPartsGroup').style.display=parts?'grid':'none';
+  document.getElementById('compostNitrogenPartsGroup').style.display=parts?'grid':'none';
+  document.getElementById('compostCarbonWeightGroup').style.display=parts?'none':'grid';
+  document.getElementById('compostNitrogenWeightGroup').style.display=parts?'none':'grid';
+  document.getElementById('compostWeightUnitGroup').style.display=parts?'none':'grid';
+  const hint=document.getElementById('compostModeHint');
+  if(hint)hint.textContent=parts
+    ? '份數模式：用相同容器或相同「一份」作為基準，例如碳材 2 份、氮材 1 份。'
+    : '實際重量模式：輸入實際秤重值，碳材與氮材共用同一單位，例如 2 kg 與 1 kg。';
+  updateCNPreview();
+}
+function currentCompostAmounts(){
+  const mode=document.getElementById('compostAmountMode')?.value||'parts';
+  if(mode==='weight'){
+    return {
+      mode,
+      carbon:Number(document.getElementById('compostCarbonWeight')?.value||0),
+      nitrogen:Number(document.getElementById('compostNitrogenWeight')?.value||0),
+      unit:document.getElementById('compostWeightUnit')?.value||'kg'
+    };
+  }
+  return {
+    mode,
+    carbon:Number(document.getElementById('compostCarbonParts')?.value||0),
+    nitrogen:Number(document.getElementById('compostNitrogenParts')?.value||0),
+    unit:'份'
+  };
+}
+function updateCNPreview(){
+  const cr=Number(document.getElementById('compostCarbonMaterial')?.value||80),
+        nr=Number(document.getElementById('compostNitrogenMaterial')?.value||17),
+        amount=currentCompostAmounts(),
+        el=document.getElementById('compostCNPreview');
+
+  if(amount.carbon<=0||amount.nitrogen<=0){
+    if(el)el.innerHTML='<div class="cn-result">請輸入大於 0 的配料數值。</div>';
+    return;
+  }
+
+  const cn=estimateCN(cr,amount.carbon,nr,amount.nitrogen),
+        a=cnAnalysis(cn),
+        modeLabel=amount.mode==='weight'?'⚖️ 實際重量模式':'🥣 份數模式',
+        amountText=amount.mode==='weight'
+          ? `碳材 ${amount.carbon}${amount.unit}・氮材 ${amount.nitrogen}${amount.unit}`
+          : `碳材 ${amount.carbon} 份・氮材 ${amount.nitrogen} 份`;
+
+  if(el)el.innerHTML=`
+    <div class="cn-result">${modeLabel}｜初始估算 C/N ≈ ${cn.toFixed(1)}:1 <span class="tag ${a.cls}">${a.label}</span></div>
+    <div class="note">${amountText}｜${a.advice}</div>
+    <div class="note" style="margin-top:5px">🎯 熟成成品參考目標：約 15–20:1。此目標不會由網站依時間自動換算，需實測才能知道真正的成品 C/N。</div>`;
+}
+function dryWetAnalysis(dry,wet){
+  dry=Number(dry);wet=Number(wet);
+  if(!Number.isFinite(dry)||!Number.isFinite(wet)||dry<=0||wet<=0)
+    return {ratio:0,label:'資料不足',cls:'',advice:'請輸入大於 0 的乾料與濕料份數。'};
+  const ratio=dry/wet;
+  if(ratio<1.5)return {ratio,label:'💧 偏濕',cls:'ratio-wet',advice:'濕料比例較高，可視實際含水狀況補充乾料並保持通風。'};
+  if(ratio>3)return {ratio,label:'🍂 偏乾',cls:'ratio-dry',advice:'乾料比例較高，可視實際狀況增加濕料或水分。'};
+  return {ratio,label:'✅ 平衡',cls:'ratio-good',advice:'乾濕配比落在系統建議管理區間。'};
+}
+function latestCompostLog(c){
+  const logs=(c.dailyLogs||[]).slice().sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+  return logs[0]||null;
+}
+function compostCalc(c){
+  const latest=latestCompostLog(c),ambient=Number(latest?.temp ?? c.temp ?? 26),pileTemp=Number(latest?.pileTemp ?? 0),humidity=Number(latest?.humidity ?? 65),dry=Number(latest?.dryParts ?? c.dryParts ?? 2),wet=Number(latest?.wetParts ?? c.wetParts ?? 1),rain=Number(latest?.rain ?? 0),moisture=latest?.moisture||'未判斷',ratio=dryWetAnalysis(dry,wet),cn=Number(c.cn||30),cna=cnAnalysis(cn);
+  let factor=1;const labels=[];
+  if(pileTemp){if(pileTemp>=45&&pileTemp<=65){factor*=.85;labels.push('🔥 堆體活躍')}else if(pileTemp<30){factor*=1.15;labels.push('🧊 堆體偏冷')}else if(pileTemp>70){factor*=1.12;labels.push('⚠️ 堆體過熱')}}
+  else if(ambient>=28){factor*=.95;labels.push('🌤️ 外氣偏暖')}else if(ambient<=15){factor*=1.08;labels.push('❄️ 外氣偏冷')}
+  if(cn<20){factor*=1.08;labels.push('⚠️ C/N 氮偏高')}else if(cn>40){factor*=1.18;labels.push('🍂 C/N 碳偏高')}else if(cn>=25&&cn<=30){factor*=.95;labels.push('✅ C/N 理想')}
+  if(moisture==='偏濕'){factor*=1.12;labels.push('💧 含水偏高')}else if(moisture==='偏乾'){factor*=1.12;labels.push('🍂 含水偏低')}else if(moisture==='適中'){factor*=.97;labels.push('✅ 含水適中')}
+  const total=Math.max(1,Math.round(Number(c.baseDays||60)*factor)),elapsed=Math.max(0,Math.floor((new Date()-new Date(c.start))/86400000));
+  return {total,remaining:Math.max(0,total-elapsed),label:labels.slice(0,2).join(' / '),detail:labels.join('・'),temp:ambient,pileTemp,humidity,dry,wet,ratio,rain,latest,cn,cna,moisture};
+}
+function compostMaturityAssessment(c){
+  const calc=compostCalc(c),latest=calc.latest;
+  const checks=[];
+
+  const timeReady=calc.remaining===0;
+  checks.push({key:'time',label:'熟成時間',ok:timeReady,text:timeReady?'已達系統估算時間':`約剩 ${calc.remaining} 天`});
+
+  const hasPile=latest&&Number.isFinite(Number(latest.pileTemp));
+  const tempDiff=hasPile?Math.abs(Number(latest.pileTemp)-Number(latest.temp)):null;
+  const coolReady=hasPile&&tempDiff<=5;
+  checks.push({key:'temp',label:'堆體降溫',ok:coolReady,text:hasPile?(coolReady?`堆體與外氣差 ${tempDiff.toFixed(1)}°C`:`仍比外氣差 ${tempDiff.toFixed(1)}°C`):'尚未量測堆體溫度'});
+
+  const moistureReady=latest?.moisture==='適中';
+  checks.push({key:'moisture',label:'含水狀態',ok:moistureReady,text:latest?.moisture||'未判斷'});
+
+  const smellReady=latest?.smell==='土味／正常';
+  checks.push({key:'smell',label:'氣味',ok:smellReady,text:latest?.smell||'未判斷'});
+
+  const materialReady=latest?.materialBreakdown==='大多無法辨識';
+  checks.push({key:'material',label:'原料分解',ok:materialReady,text:latest?.materialBreakdown||'未判斷'});
+
+  const readyCount=checks.filter(x=>x.ok).length;
+  let label='🟠 尚需觀察',cls='ratio-dry';
+  if(readyCount>=4){label='🟢 接近完成';cls='ratio-good'}
+  else if(readyCount>=2){label='🟡 熟成中';cls='ratio-wet'}
+  if(c.status==='completed'){label='✅ 已完成';cls='ratio-good'}
+
+  return {
+    readyCount,totalChecks:checks.length,checks,label,cls,
+    ready:readyCount>=4,
+    note:'熟成 C/N 約 15–20:1 只作成品參考；沒有實測 C/N 時，不會把它當成自動完成條件。'
+  };
+}
+function addCompost(){
+  const name=document.getElementById('compostName').value.trim();
+  if(!name)return toast('請輸入堆肥箱名稱');
+  const dry=Number(document.getElementById('compostDry').value),wet=Number(document.getElementById('compostWet').value);
+  const carbonRatio=Number(document.getElementById('compostCarbonMaterial').value),
+        nitrogenRatio=Number(document.getElementById('compostNitrogenMaterial').value),
+        amount=currentCompostAmounts();
+  if(amount.carbon<=0||amount.nitrogen<=0)return toast(amount.mode==='weight'?'碳材與氮材重量都必須大於 0':'碳材與氮材份數都必須大於 0');
+  const cn=estimateCN(carbonRatio,amount.carbon,nitrogenRatio,amount.nitrogen);
+  const price=Number(document.getElementById('compostPrice').value||0);
+  if(dry<=0||wet<=0)return toast('每日補料乾料與濕料份數都必須大於 0');
+  if(price<0)return toast('建置成本不能小於 0');
+
+  const compostId='c'+Date.now();
+  state.compost.push({
+    id:compostId,
+    name,
+    cn,carbonRatio,nitrogenRatio,
+    mixMode:amount.mode,
+    carbonParts:amount.mode==='parts'?amount.carbon:0,
+    nitrogenParts:amount.mode==='parts'?amount.nitrogen:0,
+    carbonWeight:amount.mode==='weight'?amount.carbon:0,
+    nitrogenWeight:amount.mode==='weight'?amount.nitrogen:0,
+    weightUnit:amount.mode==='weight'?amount.unit:'kg',
+    dryParts:dry,
+    wetParts:wet,
+    temp:Number(compostTemp.value||26),
+    season:compostSeason.value,
+    baseDays:Number(compostDays.value||60),
+    start:compostStart.value||todayISO(),
+    price,
+    dailyLogs:[]
+  });
+
+  if(price>0){
+    state.expenses.unshift({
+      id:'e'+Date.now()+'c',
+      date:compostStart.value||todayISO(),
+      category:'堆肥用品',
+      name:`${name}（堆肥箱建置／材料成本）`,
+      amount:price,
+      source:'compost',
+      compostId
+    });
+    addIntegrationLog('堆肥建置',`${name} 建立，成本 ${money(price)} 自動同步帳本`);
+  }
+
+  compostName.value='';
+  compostPrice.value=0;
+  save();
+  toast(price>0?'堆肥箱已建立，成本已同步花園帳本':'堆肥箱已建立，可開始每日追蹤');
+}
+function renderCompost(){
+  const el=document.getElementById('compostList');
+  if(!state.compost.length){
+    el.innerHTML='<div class="empty" style="grid-column:1/-1">尚未建立堆肥箱。</div>';
+    return;
+  }
+
+  el.innerHTML=state.compost.map(c=>{
+    const a=compostCalc(c);
+    const pct=Math.min(100,Math.max(0,Math.round((1-a.remaining/a.total)*100)));
+    const latest=a.latest;
+    const ratio=a.ratio;
+    const logs=(c.dailyLogs||[]).slice().sort((x,y)=>String(y.date).localeCompare(String(x.date)));
+    const recent=logs.slice(0,3);
+    const maturity=compostMaturityAssessment(c);
+    const mixMode=c.mixMode||'parts';
+    const mixLabel=mixMode==='weight'
+      ? `⚖️ 重量：${Number(c.carbonWeight||0)}${esc(c.weightUnit||'kg')} : ${Number(c.nitrogenWeight||0)}${esc(c.weightUnit||'kg')}`
+      : `🥣 份數：${Number(c.carbonParts||0)} : ${Number(c.nitrogenParts||0)}`;
+
+    return `<div class="compost-card">
+      <div class="compost-card-head">
+        <div>
+          <strong style="font-size:15px">♻️ ${esc(c.name)}</strong>
+          <div class="note">開始 ${esc(c.start)}・${esc(c.season)}季・${mixLabel}・初始 C/N ${Number(c.cn||0).toFixed(1)}:1・熟成目標參考 15–20:1・💰 ${Number(c.price||0)>0?money(c.price):"未記成本"}</div>
+        </div>
+        <span class="tag ${ratio.cls}">${ratio.label}</span>
+      </div>
+
+      <div class="compost-metrics">
+        <div class="compost-metric"><small>初始配方 C/N</small><strong>${a.cn.toFixed(1)}:1</strong></div><div class="compost-metric"><small>熟成 C/N 參考</small><strong>15–20:1</strong></div><div class="compost-metric"><small>補料乾濕比</small><strong>${a.dry}:${a.wet}</strong></div>
+        <div class="compost-metric"><small>最新氣溫</small><strong>${Number.isFinite(a.temp)?a.temp+'°C':'—'}</strong></div>
+        <div class="compost-metric"><small>最新濕度</small><strong>${Number.isFinite(a.humidity)?a.humidity+'%':'—'}</strong></div>
+        <div class="compost-metric"><small>熟成估算</small><strong>剩 ${a.remaining} 天</strong></div>
+        <div class="compost-metric"><small>每日紀錄</small><strong>${logs.length} 天</strong></div>
+        <div class="compost-metric"><small>最新天氣</small><strong>${latest?esc(latest.weather||'未填'):'尚無紀錄'}</strong></div>
+      </div>
+
+      <div class="note">${esc(a.detail)}</div>${c.importedStatusText?`<div class="tag" style="margin-top:6px">📥 匯入狀態：${esc(c.importedStatusText)}</div>`:""}${c.lastIssue?`<div class="tag damage" style="margin-top:6px">🛠️ 最近異常：${esc(c.lastIssue)}</div>`:""}
+
+      <div class="ratio-guide ${maturity.cls}" style="margin-top:8px">
+        <strong>${maturity.label}｜熟成檢查 ${maturity.readyCount}/${maturity.totalChecks}</strong>
+        <div style="margin-top:5px">${maturity.checks.map(x=>`${x.ok?'✅':'⬜'} ${x.label}：${esc(x.text)}`).join('　')}</div>
+        <div class="note" style="margin-top:5px">${maturity.note}</div>
+      </div>
+
+      <div class="kpi-line"><span style="width:${pct}%"></span></div>
+
+      ${recent.length?`<div class="daily-log-list">${recent.map(l=>{
+        const ra=dryWetAnalysis(l.dryParts,l.wetParts);
+        return `<div class="daily-log">
+          <div class="daily-log-top"><strong>${esc(l.date)}</strong><span class="tag ${ra.cls}">${ra.label}</span></div>
+          <div class="weather-row">
+            <span class="tag">🌦️ ${esc(l.weather||'未填')}</span>
+            <span class="tag">🌡️ ${l.temp ?? '—'}°C</span>
+            <span class="tag">💧 ${l.humidity ?? '—'}%</span>
+            <span class="tag">🥬 ${l.dryParts}:${l.wetParts}</span>
+            ${l.smell?`<span class="tag">👃 ${esc(l.smell)}</span>`:''}
+            ${l.materialBreakdown?`<span class="tag">🧩 ${esc(l.materialBreakdown)}</span>`:''}
+          </div>
+        </div>`;
+      }).join('')}</div>`:'<div class="empty" style="margin-top:9px">尚無每日紀錄</div>'}
+
+      <div class="row-actions" style="margin-top:10px">
+        <button class="btn primary" onclick="openDailyCompost('${c.id}')">📅 每日紀錄</button>
+        <button class="btn" onclick="openDailyCompost('${c.id}',true)">📜 查看歷史</button>
+        ${c.status==='completed'
+          ? `<span class="tag completed">✅ 已完成並入庫 ${esc(c.outputItem||'培養土')} +${c.outputQty||1}</span>`
+          : `<button class="btn primary" onclick="finishCompost('${c.id}')">✅ 完成熟成並入庫</button>`}
+        <button class="btn" onclick="recordCompostDamage('${c.id}')">🛠️ 異常／損壞</button>
+        <button class="icon-btn" onclick="removeCompost('${c.id}')">🗑️</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function openDailyCompost(id,historyOnly=false){
+  const c=state.compost.find(x=>x.id===id);if(!c)return;
+  document.getElementById('dailyCompostId').value=id;
+  document.getElementById('compostDailyTitle').textContent=`📅 ${c.name}｜每日天氣與乾濕比`;
+  document.getElementById('dailyDate').value=todayISO();
+  loadDailyLogForDate();
+  document.getElementById('compostDailyModal').classList.add('show');
+
+  if(historyOnly){
+    const logs=(c.dailyLogs||[]).slice().sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+    if(!logs.length)toast('目前尚無每日歷史紀錄');
+    else toast(`目前已累積 ${logs.length} 天紀錄，可切換日期查看`);
+  }
+}
+function loadDailyLogForDate(){
+  const id=document.getElementById('dailyCompostId').value;
+  const c=state.compost.find(x=>x.id===id);if(!c)return;
+  const date=document.getElementById('dailyDate').value||todayISO();
+  const log=(c.dailyLogs||[]).find(x=>x.date===date);
+
+  document.getElementById('dailyWeather').value=log?.weather||'晴';
+  document.getElementById('dailyTemp').value=log?.temp ?? c.temp ?? 26;
+  document.getElementById('dailyHumidity').value=log?.humidity ?? 65;
+  document.getElementById('dailyRain').value=log?.rain ?? 0;
+  document.getElementById('dailyPileTemp').value=log?.pileTemp ?? '';
+  document.getElementById('dailyMoisture').value=log?.moisture ?? '未判斷';
+  document.getElementById('dailySmell').value=log?.smell ?? '未判斷';
+  document.getElementById('dailyMaterialBreakdown').value=log?.materialBreakdown ?? '未判斷';
+  document.getElementById('dailyDry').value=log?.dryParts ?? c.dryParts ?? 2;
+  document.getElementById('dailyWet').value=log?.wetParts ?? c.wetParts ?? 1;
+  document.getElementById('dailyNote').value=log?.note||'';
+  document.getElementById('dailyWeatherSource').value=log?.source||'手動輸入';
+  document.getElementById('weatherFetchStatus').textContent=log
+    ? `已載入 ${date} 的既有紀錄；重新儲存會更新這一天。`
+    : `${date} 尚無紀錄，可手動輸入或自動取得今天的目前天氣。`;
+  updateDailyRatioPreview();
+}
+function updateDailyRatioPreview(){
+  const dry=Number(document.getElementById('dailyDry').value);
+  const wet=Number(document.getElementById('dailyWet').value);
+  const a=dryWetAnalysis(dry,wet);
+  const el=document.getElementById('dailyRatioPreview');
+  el.className='ratio-guide '+a.cls;
+  el.textContent=a.ratio
+    ? `${a.label}｜乾料 : 濕料 = ${dry}:${wet}（約 ${a.ratio.toFixed(2)}:1）｜${a.advice}`
+    : a.advice;
+}
+function saveDailyCompostLog(){
+  const id=document.getElementById('dailyCompostId').value;
+  const c=state.compost.find(x=>x.id===id);if(!c)return;
+  const date=document.getElementById('dailyDate').value;
+  const dry=Number(document.getElementById('dailyDry').value);
+  const wet=Number(document.getElementById('dailyWet').value);
+  const temp=Number(document.getElementById('dailyTemp').value);
+  const humidity=Number(document.getElementById('dailyHumidity').value);
+  const rain=Number(document.getElementById('dailyRain').value||0),
+        pileTempRaw=document.getElementById('dailyPileTemp').value,
+        pileTemp=pileTempRaw===''?null:Number(pileTempRaw),
+        moisture=document.getElementById('dailyMoisture').value,
+        smell=document.getElementById('dailySmell').value,
+        materialBreakdown=document.getElementById('dailyMaterialBreakdown').value;
+
+  if(!date)return toast('請選擇紀錄日期');
+  if(dry<=0||wet<=0)return toast('乾料與濕料份數都必須大於 0');
+  if(!Number.isFinite(temp))return toast('請輸入有效氣溫');
+  if(!Number.isFinite(humidity)||humidity<0||humidity>100)return toast('相對濕度需介於 0～100');
+
+  const log={
+    date,
+    weather:customOrSelected('dailyWeather','dailyWeatherCustom'),
+    temp,
+    humidity,
+    rain:Math.max(0,rain),pileTemp,moisture,smell,materialBreakdown,
+    dryParts:dry,
+    wetParts:wet,
+    note:document.getElementById('dailyNote').value.trim(),
+    source:document.getElementById('dailyWeatherSource').value||'手動輸入',
+    updatedAt:new Date().toISOString()
+  };
+
+  c.dailyLogs=c.dailyLogs||[];
+  const idx=c.dailyLogs.findIndex(x=>x.date===date);
+  if(idx>=0)c.dailyLogs[idx]=log;
+  else c.dailyLogs.push(log);
+
+  // Keep latest values as the compost box's current snapshot.
+  const latest=latestCompostLog(c);
+  if(latest){
+    c.temp=latest.temp;
+    c.dryParts=latest.dryParts;
+    c.wetParts=latest.wetParts;
+  }
+
+  save();
+  closeModal('compostDailyModal');
+  toast(idx>=0?'已更新當日堆肥紀錄':'已新增每日堆肥紀錄');
+}
+function weatherCodeText(code){
+  code=Number(code);
+  if(code===0)return '晴';
+  if([1,2].includes(code))return '多雲';
+  if(code===3)return '陰';
+  if([45,48].includes(code))return '陰';
+  if([51,53,55,56,57,61,63].includes(code))return '小雨';
+  if([65,66,67,80,81,82].includes(code))return '雨';
+  if([95,96,99].includes(code))return '雷雨';
+  return '其他';
+}
+function fetchCurrentWeather(){
+  const status=document.getElementById('weatherFetchStatus');
+  const btn=document.getElementById('weatherFetchBtn');
+
+  if(document.getElementById('dailyDate').value!==todayISO()){
+    toast('自動天氣僅取得目前天氣；歷史日期請手動輸入');
+    return;
+  }
+  if(!navigator.geolocation){
+    toast('此瀏覽器不支援定位，請手動輸入天氣');
+    return;
+  }
+
+  btn.disabled=true;
+  btn.textContent='📍 定位中…';
+  status.textContent='正在取得位置與目前天氣…';
+
+  navigator.geolocation.getCurrentPosition(async pos=>{
+    try{
+      const lat=pos.coords.latitude;
+      const lon=pos.coords.longitude;
+      const url=`https://api.open-meteo.com/v1/forecast?latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&current=temperature_2m,relative_humidity_2m,precipitation,weather_code&timezone=auto`;
+      const res=await fetch(url);
+      if(!res.ok)throw new Error('weather fetch failed');
+      const data=await res.json();
+      const cur=data.current||{};
+
+      document.getElementById('dailyTemp').value=cur.temperature_2m ?? '';
+      document.getElementById('dailyHumidity').value=cur.relative_humidity_2m ?? '';
+      document.getElementById('dailyRain').value=cur.precipitation ?? 0;
+      document.getElementById('dailyWeather').value=weatherCodeText(cur.weather_code);
+      document.getElementById('dailyWeatherSource').value='Open-Meteo 自動取得';
+      status.textContent=`已取得目前天氣：${cur.temperature_2m ?? '—'}°C、濕度 ${cur.relative_humidity_2m ?? '—'}%、降雨 ${cur.precipitation ?? 0} mm。`;
+      toast('目前天氣已帶入，確認後再儲存');
+    }catch(e){
+      status.textContent='天氣取得失敗，已保留手動輸入欄位。';
+      toast('無法取得天氣，請改用手動輸入');
+    }finally{
+      btn.disabled=false;
+      btn.textContent='📍 自動取得目前天氣';
+    }
+  },err=>{
+    btn.disabled=false;
+    btn.textContent='📍 自動取得目前天氣';
+    status.textContent='定位未允許或取得失敗，可直接手動輸入天氣。';
+    toast('未取得定位權限，請手動輸入');
+  },{enableHighAccuracy:false,timeout:10000,maximumAge:300000});
+}
+function finishCompost(id){
+  const c=state.compost.find(x=>x.id===id);if(!c)return;
+  if(c.status==='completed')return toast('此堆肥箱已完成入庫，避免重複增加庫存');
+
+  const maturity=compostMaturityAssessment(c);
+  if(!maturity.ready){
+    const notReady=maturity.checks.filter(x=>!x.ok).map(x=>`・${x.label}：${x.text}`).join('\n');
+    if(!confirm(`目前綜合熟成檢查為 ${maturity.readyCount}/${maturity.totalChecks}，系統尚未判定接近完成。\n\n未符合／未紀錄：\n${notReady}\n\n熟成 C/N 15–20:1 只是成品參考，未實測不會自動判定。\n\n如果你已依實際氣味、外觀、溫度等確認成熟，仍可手動完成。是否繼續？`))return;
+  }
+
+  const itemName=(prompt('完成後要轉入道具背包的名稱：','培養土')||'培養土').trim();
+  if(!itemName)return toast('請輸入產出名稱');
+  const qty=Number(prompt('產出數量：','1'));
+  if(!Number.isFinite(qty)||qty<=0)return toast('產出數量需大於 0');
+  const unit=(prompt('產出單位：','份')||'份').trim()||'份';
+
+  let item=state.inventory.find(i=>i.name===itemName);
+  if(item)item.qty+=qty;
+  else state.inventory.push({id:'i'+Date.now(),name:itemName,type:'培養土',qty,unit,unitPrice:0});
+
+  c.status='completed';c.completedAt=new Date().toISOString();c.outputItem=itemName;c.outputQty=qty;c.outputUnit=unit;
+  c.maturitySnapshot={readyCount:maturity.readyCount,totalChecks:maturity.totalChecks,checkedAt:c.completedAt};
+  state.compostLogs.unshift({id:'cl'+Date.now(),date:c.completedAt,compostId:id,name:c.name,type:'熟成完成',reason:`熟成檢查 ${maturity.readyCount}/${maturity.totalChecks}；轉入背包：${itemName} +${qty}${unit}`});
+  state.inventoryLogs.unshift({id:'il'+Date.now(),date:c.completedAt,itemId:item?.id||'',name:itemName,type:'堆肥產出入庫',qty,reason:`由 ${c.name} 熟成完成自動產出`});
+  addIntegrationLog('堆肥完成',`${c.name} → 道具背包「${itemName}」+${qty}${unit}；熟成檢查 ${maturity.readyCount}/${maturity.totalChecks}`);
+  save();toast(`${c.name} 已完成，${itemName} 自動 +${qty}${unit}`);
+}
+function recordCompostDamage(id){
+  const c=state.compost.find(x=>x.id===id);if(!c)return;
+  const reason=(prompt(`記錄「${c.name}」異常／損壞內容：`,'')||'').trim();
+  if(!reason)return toast('請輸入異常或損壞內容');
+  state.compostLogs.unshift({id:'cl'+Date.now(),date:new Date().toISOString(),compostId:id,name:c.name,type:'異常／損壞',reason});
+  c.lastIssue=reason;save();toast('堆肥箱異常／損壞紀錄已保存');
+}
+function removeCompost(id){
+  if(confirm('確定刪除此堆肥箱？每日追蹤紀錄也會一起刪除。')){
+    state.compost=state.compost.filter(x=>x.id!==id);
+    save();
+  }
+}
+function inventoryExpenseCategory(type){
+  const map={
+    '盆器':'盆器',
+    '工具':'園藝工具',
+    '肥料':'肥料',
+    '培養土':'培養土／介質',
+    '病蟲害用品':'病蟲害用品',
+    '其他':'其他'
+  };
+  return map[type]||'其他';
+}
+function updateInventoryCostPreview(){
+  const qty=Number(document.getElementById('invQty')?.value||0);
+  const price=Number(document.getElementById('invPrice')?.value||0);
+  const el=document.getElementById('invCostPreview');
+  if(!el)return;
+  if(qty>0&&price>0){
+    el.textContent=`${qty} × ${money(price)} = ${money(qty*price)}，加入背包時自動同步帳本。`;
+  }else{
+    el.textContent='未填價格，不產生支出。';
+  }
+}
+function addInventory(){
+  const name=invName.value.trim();
+  const qty=Number(invQty.value);
+  const unitPrice=Number(invPrice.value||0);
+  if(!name)return toast('請輸入資材名稱');
+  if(!Number.isFinite(qty)||qty<=0)return toast('數量必須大於 0');
+  if(!Number.isFinite(unitPrice)||unitPrice<0)return toast('單價不能小於 0');
+
+  const unit=invUnit.value.trim()||'個';
+  const type=customOrSelected('invType','invTypeCustom');
+  if(invType.value==='其他'&&!invTypeCustom.value.trim())return toast('分類選「其他」時請輸入自訂分類');
+  const hit=state.inventory.find(i=>i.name===name&&i.type===type);
+
+  if(hit){
+    hit.qty+=qty;
+    if(unitPrice>0)hit.unitPrice=unitPrice;
+  }else{
+    state.inventory.push({id:'i'+Date.now(),name,type,qty,unit,unitPrice});
+  }
+
+  if(unitPrice>0){
+    state.expenses.unshift({
+      id:'e'+Date.now(),
+      date:todayISO(),
+      category:inventoryExpenseCategory(type),
+      name:`${name} × ${qty}${unit}`,
+      amount:unitPrice*qty,
+      source:'inventory'
+    });
+    addIntegrationLog('資材購入',`${name} +${qty}${unit}，自動同步帳本 ${money(unitPrice*qty)}`);
+  }
+
+  invName.value='';
+  invQty.value=1;
+  invPrice.value=0;
+  updateInventoryCostPreview();
+  save();
+  toast(unitPrice>0?'庫存已更新，購入金額已同步帳本':'庫存已更新');
+}
+function editInventory(id){
+  const i=state.inventory.find(x=>x.id===id);if(!i)return;
+  const old={name:i.name,type:i.type,qty:i.qty,unit:i.unit,unitPrice:i.unitPrice};
+  const name=(prompt('資材名稱：',i.name)||'').trim();if(!name)return;
+  const type=(prompt('分類（盆器／工具／肥料／培養土／病蟲害用品／其他）：',i.type)||i.type).trim();
+  const qty=Number(prompt('目前數量：',String(i.qty)));
+  const unit=(prompt('單位：',i.unit)||i.unit).trim()||'個';
+  const unitPrice=Number(prompt('單價：',String(i.unitPrice||0)));
+  if(!Number.isFinite(qty)||qty<0||!Number.isFinite(unitPrice)||unitPrice<0)return toast('數量或單價格式錯誤');
+  i.name=name;i.type=type;i.qty=qty;i.unit=unit;i.unitPrice=unitPrice;
+  state.inventoryLogs.unshift({id:'il'+Date.now(),date:new Date().toISOString(),itemId:id,name,type:'修改內容',qty,reason:`${old.name} / ${old.qty}${old.unit} → ${name} / ${qty}${unit}`});
+  addIntegrationLog('背包修改',`${old.name} 已修改為 ${name}，數量 ${old.qty} → ${qty}`);
+  save();toast('資材內容已修改');
+}
+function deleteInventory(id){
+  const i=state.inventory.find(x=>x.id===id);if(!i)return;
+  if(!confirm(`確定從道具背包刪除「${i.name}」？\n目前仍有 ${i.qty} ${i.unit}。\n刪除會保留一筆刪除紀錄，但不會自動刪除過去帳本。`))return;
+  state.inventoryLogs.unshift({id:'il'+Date.now(),date:new Date().toISOString(),itemId:id,name:i.name,type:'刪除資材',qty:i.qty,reason:'使用者手動刪除'});
+  addIntegrationLog('背包刪除',`已刪除 ${i.name}（刪除前 ${i.qty}${i.unit}）`);
+  state.inventory=state.inventory.filter(x=>x.id!==id);
+  save();toast('資材已刪除，紀錄已保留');
+}
+function recordInventoryDamage(id){
+  const item=state.inventory.find(x=>x.id===id);if(!item)return;
+  const qty=Number(prompt(`「${item.name}」損壞／報廢數量：`,'1'));
+  if(!Number.isFinite(qty)||qty<=0)return toast('請輸入有效數量');
+  if(qty>item.qty)return toast('損壞數量不能大於目前庫存');
+  const reason=(prompt('損壞原因／備註：','')||'未紀錄').trim()||'未紀錄';
+  item.qty-=qty;
+  state.inventoryLogs.unshift({id:'il'+Date.now(),date:new Date().toISOString(),itemId:id,name:item.name,type:'損壞／報廢',qty,reason});
+  save();toast('損壞紀錄已保存，庫存已扣減');
+}
+function adjustInventory(id,delta){
+  const i=state.inventory.find(x=>x.id===id);if(!i)return;
+  if(i.qty+delta<0)return toast('庫存不能小於 0');
+  i.qty+=delta;
+  save();
+}
+function renderInventory(){
+  document.getElementById('inventoryList').innerHTML=state.inventory.length
+    ? state.inventory.map(i=>{
+        const price=Number(i.unitPrice||0);
+        const value=price*Number(i.qty||0);
+        return `<div class="row">
+          <div class="row-main">
+            <strong>${esc(i.name)}</strong>
+            <small>${esc(i.type)}・目前 ${i.qty} ${esc(i.unit)}${price>0?`・單價 ${money(price)}・庫存價值 ${money(value)}`:'・未記單價'}</small>
+          </div>
+          <div class="row-actions">
+            <button class="icon-btn" onclick="adjustInventory('${i.id}',-1)">−</button>
+            <button class="icon-btn" onclick="adjustInventory('${i.id}',1)">＋</button>
+            <button class="btn" onclick="recordInventoryDamage('${i.id}')">🛠️ 損壞</button>
+            <button class="btn" onclick="editInventory('${i.id}')">✏️ 修改</button>
+            <button class="icon-btn" onclick="deleteInventory('${i.id}')">🗑️</button>
+          </div>
+        </div>`;
+      }).join('')
+    : '<div class="empty">背包是空的。</div>';
+  const logEl=document.getElementById('inventoryDamageList');
+  if(logEl)logEl.innerHTML=state.inventoryLogs.length?state.inventoryLogs.slice(0,20).map(l=>`<div class="log-item"><strong>🛠️ ${esc(l.name)} −${l.qty}</strong><div>${esc(l.reason)}</div><small>${new Date(l.date).toLocaleString('zh-TW')}</small></div>`).join(''):'<div class="empty">尚無損壞／報廢紀錄。</div>';
+}
+function addVendor(){
+  const product=vendorProduct.value.trim(),seller=vendorName.value.trim();
+  const totalPrice=Number(vendorPrice.value),purchasedQty=Number(vendorPurchasedQty.value),survivedQty=Number(vendorSurvivedQty.value);
+  const arrivalCondition=Number(vendorArrivalCondition.value),afterSales=Number(vendorAfterSales.value);
+  if(!product||!seller)return toast('植物／商品與賣家不可空白');
+  if(totalPrice<0||purchasedQty<1||survivedQty<0||survivedQty>purchasedQty)return toast('請確認金額與購入／存活株數');
+  if(arrivalCondition<1||arrivalCondition>5||afterSales<1||afterSales>5)return toast('到貨狀況與售後需介於 1～5');
+  state.vendors.push({id:'v'+Date.now(),product,seller,totalPrice,price:totalPrice,purchasedQty,survivedQty,arrivalCondition,afterSales,createdAt:new Date().toISOString()});
+  vendorProduct.value='';vendorName.value='';vendorPrice.value='';
+  save();toast('賣家資料已新增，健康品質與 CP 已自動計算');
+}
+function updateVendorStatus(id){
+  const v=state.vendors.find(x=>x.id===id);if(!v)return;
+  const survived=Number(prompt(`「${v.seller}」目前存活株數（購入 ${v.purchasedQty} 株）：`,String(v.survivedQty)));
+  if(!Number.isFinite(survived)||survived<0||survived>v.purchasedQty)return toast('存活株數格式錯誤');
+  const after=Number(prompt('售後服務 1～5：',String(v.afterSales||3)));
+  if(!Number.isFinite(after)||after<1||after>5)return toast('售後服務需介於 1～5');
+  v.survivedQty=survived;v.afterSales=after;v.updatedAt=new Date().toISOString();
+  save();toast('狀況已更新，健康品質與 CP 已自動重算');
+}
+function renderVendors(){
+  const groups={};state.vendors.forEach(v=>(groups[v.product]??=[]).push(v));
+  const recommended=new Set();
+  Object.values(groups).forEach(arr=>{
+    const best=[...arr].sort((a,b)=>vendorScore(b,arr)-vendorScore(a,arr))[0];
+    if(best)recommended.add(best.id);
+  });
+  vendorBody.innerHTML=state.vendors.length?state.vendors.map(v=>{
+    const group=groups[v.product]||[v],d=vendorScoreDetails(v,group);
+    const p=Math.max(1,Number(v.purchasedQty||1)),s=Math.max(0,Math.min(p,Number(v.survivedQty||0))),rate=Math.round(s/p*100);
+    const q=vendorHealthQuality(v),quality=vendorQualityLabel(v),liked=sellerLiked(v.seller);
+    const arrival=Number(v.arrivalCondition||3);
+    return `<tr>
+      <td>${esc(v.product)}</td>
+      <td><strong>${esc(v.seller)}</strong>${liked?'<div><span class="tag gold">👍 我按讚的商家</span></div>':''}</td>
+      <td>${money(Number(v.totalPrice??v.price??0))} / ${p}株</td>
+      <td><strong>${rate}%</strong><small style="display:block">${s}/${p} 株</small></td>
+      <td>${Number.isFinite(d.cost)?money(d.cost):'<span class="tag damage">無存活</span>'}</td>
+      <td><strong>${q.toFixed(1)}/5</strong><small style="display:block">到貨 ${arrival.toFixed(0)}/5＋存活結果自動估算</small><span class="tag ${quality[1]}">${quality[0]}</span></td>
+      <td>${Number(v.afterSales||3).toFixed(1)}/5</td>
+      <td><strong>${d.total.toFixed(2)}/5</strong><div class="scorebar"><span style="width:${Math.min(100,d.total/5*100)}%"></span></div></td>
+      <td>${recommended.has(v.id)?'<span class="tag gold">👑 系統推薦</span>':'—'}</td>
+      <td><button class="btn" onclick="toggleVendorLike('${esc(v.seller).replace(/'/g,"\\'")}')">${liked?'👍 已按讚':'👍 按讚'}</button></td>
+      <td><div class="row-actions"><button class="btn" onclick="updateVendorStatus('${v.id}')">🩺 更新狀況</button><button class="icon-btn" onclick="removeVendor('${v.id}')">🗑️</button></div></td>
+    </tr>`;
+  }).join(''):'<tr><td colspan="11">尚無比價資料。</td></tr>';
+}
+function removeVendor(id){state.vendors=state.vendors.filter(x=>x.id!==id);save()}
+function addExpense(){
+  const date=expDate.value||todayISO(),name=expName.value.trim(),amount=Number(expAmount.value);
+  if(!name||amount<=0)return toast('請輸入有效的支出名稱與金額');
+  const category=customOrSelected('expCategory','expCategoryCustom');if(expCategory.value==='其他'&&!expCategoryCustom.value.trim())return toast('請輸入自訂支出分類');
+  state.expenses.unshift({id:'e'+Date.now(),date,category,name,amount});expName.value='';expAmount.value='';save();toast('支出已加入帳本');
+}
+function addQuickExpense(){
+  const date=quickExpDate.value||todayISO(),name=quickExpName.value.trim(),amount=Number(quickExpAmount.value);
+  if(!name||amount<=0)return toast('請輸入有效的支出名稱與金額');
+  const category=customOrSelected('quickExpCategory','quickExpCategoryCustom');if(quickExpCategory.value==='其他'&&!quickExpCategoryCustom.value.trim())return toast('請輸入自訂支出分類');
+  state.expenses.unshift({id:'e'+Date.now(),date,category,name,amount});quickExpName.value='';quickExpAmount.value='';closeModal('expenseModal');save();toast('支出已加入帳本');
+}
+function removeExpense(id){
+  const e=state.expenses.find(x=>x.id===id);
+  if(!e)return;
+  if(!confirm(`確定刪除這筆支出？\n${e.name}｜${money(e.amount)}\n\n只會刪除帳本紀錄，不會反向刪除植物、庫存或堆肥箱。`))return;
+  state.expenses=state.expenses.filter(x=>x.id!==id);
+  save();
+  toast('支出紀錄已刪除');
+}
+function renderExpenses(){
+  const now=new Date(),ym=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`,y=String(now.getFullYear());
+  const total=state.expenses.reduce((a,b)=>a+Number(b.amount),0);
+  const income=state.incomes.reduce((a,b)=>a+Number(b.amount),0);
+  const month=state.expenses.filter(e=>e.date.startsWith(ym)).reduce((a,b)=>a+Number(b.amount),0);
+  const year=state.expenses.filter(e=>e.date.startsWith(y)).reduce((a,b)=>a+Number(b.amount),0);
+  expenseStats.innerHTML=[
+    ['本月支出',money(month)],
+    ['今年支出',money(year)],
+    ['累計收入',money(income)],
+    ['花園總淨支出',money(total-income)]
+  ].map(x=>`<div class="stat"><div class="k">${x[0]}</div><div class="v">${x[1]}</div></div>`).join('');
+
+  const tx=[
+    ...state.expenses.map(e=>({...e,kind:'expense'})),
+    ...state.incomes.map(e=>({...e,kind:'income'}))
+  ].sort((a,b)=>String(b.date).localeCompare(String(a.date))).slice(0,14);
+  expenseList.innerHTML=tx.length?tx.map(e=>`<div class="row">
+    <div class="row-main">
+      <strong>${e.kind==='income'?'🪙':'💸'} ${esc(e.name)}</strong>
+      <small>${esc(e.date)}・${esc(e.category)}${e.source?'・自動同步':''}</small>
+    </div>
+    <div class="row-actions">
+      <div class="money ${e.kind==='income'?'roi-positive':''}">${e.kind==='income'?'+':'-'}${money(e.amount)}</div>
+      ${e.kind==='expense'?`<button class="icon-btn" title="刪除此支出" onclick="removeExpense('${e.id}')">🗑️</button>`:''}
+    </div>
+  </div>`).join(''):'<div class="empty">尚無收支紀錄。</div>';
+
+  const roiPlants=state.plants.filter(p=>Number(p.price||0)>0 || state.plants.some(c=>c.parentId===p.id) || state.incomes.some(r=>r.parentId===p.id));
+  roiList.innerHTML=roiPlants.length?roiPlants.map(p=>{
+    const cost=Number(p.price||0);
+    const revenue=state.incomes.filter(r=>r.parentId===p.id).reduce((a,b)=>a+Number(b.amount||0),0);
+    const profit=revenue-cost;
+    const rate=cost>0?Math.round(profit/cost*100):null;
+    const dead=p.status==='dead';
+    const stateTag=dead?'<span class="tag roi-dead">🪦 已死亡・歷史 ROI 保留</span>':p.status==='alive'?'<span class="tag">🌱 現役</span>':'';
+    let result='';
+    if(profit>=0)result=`<div class="roi-positive">淨收益 ${money(profit)}${rate!==null?`・ROI ${rate}%`:''}</div>`;
+    else result=`<div class="roi-negative">${dead?'沉沒成本／未回收 ':'尚未回本 '}${money(Math.abs(profit))}${rate!==null?`・ROI ${rate}%`:''}</div>`;
+    return `<div class="row"><div class="row-main"><strong>🌿 #${esc(p.id)} ${esc(p.name)}</strong><small>購入成本 ${money(cost)}・直接側芽／子株出售收益 ${money(revenue)}</small>${stateTag}</div>${result}</div>`;
+  }).join(''):'<div class="empty">尚無可計算單株 ROI 的植物。</div>';
+
+  const catTotals={};
+  state.expenses.forEach(e=>catTotals[e.category]=(catTotals[e.category]||0)+Number(e.amount||0));
+  expenseCategoryStats.innerHTML=Object.entries(catTotals).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="row"><div class="row-main"><strong>${esc(k)}</strong></div><div class="money">${money(v)}</div></div>`).join('')||'<div class="empty">尚無支出。</div>';
+
+  const typeTotals={};
+  state.expenses.filter(e=>e.category==='植物').forEach(e=>{
+    const p=state.plants.find(x=>x.id===e.plantId),type=e.plantType||p?.type||'未分類';
+    typeTotals[type]=(typeTotals[type]||0)+Number(e.amount||0);
+  });
+  plantTypeCostStats.innerHTML=Object.entries(typeTotals).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="row"><div class="row-main"><strong>🌿 ${esc(k)}</strong></div><div class="money">${money(v)}</div></div>`).join('')||'<div class="empty">尚無植物種類購入成本。</div>';
+}
+function renderAll(){renderPlantTypes();renderImportBatches();renderCampManager();renderDashboard();renderPlants();renderLineage();renderCompost();renderInventory();renderVendors();renderExpenses()}
+function resetDemo(){
+  if(!confirm('確定重置所有目前資料並恢復示範資料？\n\n這會清除目前植物、匯入資料、帳本、庫存、堆肥、定位設定與自動連動紀錄。'))return;
+
+  try{
+    // Hard reset the persisted data first.
+    localStorage.removeItem(KEY);
+
+    // Recreate the seed data, then migrate/normalize it to the CURRENT schema
+    // before any render function is called.
+    state=seedState();
+    normalize();
+
+    currentCamp='全部';
+    pendingAI=null;
+    pendingFullImport=null;
+
+    // Close any open modal left from the previous dataset.
+    document.querySelectorAll('.modal.show').forEach(m=>m.classList.remove('show'));
+
+    // Persist the fully-normalized reset state.
+    localStorage.setItem(KEY,JSON.stringify(state));
+
+    // Return to dashboard and redraw from the new state.
+    document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+    const dashboard=document.getElementById('dashboard');
+    if(dashboard)dashboard.classList.add('active');
+    document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page==='dashboard'));
+    document.getElementById('pageTitle').textContent='莊園總覽';
+    document.getElementById('pageDesc').textContent='掌握植物、資材、支出與堆肥狀態。';
+
+    renderAll();
+    window.scrollTo({top:0,behavior:'smooth'});
+    toast('示範資料已完整重置');
+  }catch(e){
+    console.error('resetDemo failed:',e);
+    alert('重置失敗：'+(e?.message||e));
+  }
+}
+window.addEventListener('click',e=>{if(e.target.classList.contains('modal'))e.target.classList.remove('show')});
+load();
+document.getElementById('compostStart').value=todayISO();
+document.getElementById('expDate').value=todayISO();
+updateInventoryCostPreview();
+updateCNPreview();
+renderAll();
+</script>
+</body>
+</html>
